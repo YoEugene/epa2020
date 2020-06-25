@@ -15,8 +15,8 @@ data_folder_prefix = './data'
 
 
 def main():
-    for position in ['South']:
-        for station in reversed(os.listdir('/'.join([data_folder_prefix, position]))):
+    for position in ['Central', 'North', 'South']:
+        for station in os.listdir('/'.join([data_folder_prefix, position])):
             if '.' in station: continue
             print(station)
             for hour in range(1, 14):  # build data for prediction hour_1 ~ hour_13
