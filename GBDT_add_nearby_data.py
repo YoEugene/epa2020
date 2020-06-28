@@ -1,6 +1,7 @@
 import csv
 import os
 import argparse
+from datetime import datetime, timedelta
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-pos', help='position')
@@ -13,20 +14,18 @@ data_folder_prefix = './data'
 
 
 def main():
-    for hour in range(1, 25):
-        for station in args.s.split('  '):
-            if '.' in station: continue
-            position = args.pos
-            other_stations = []
-            for station_tmp in os.listdir('/'.join([data_folder_prefix, position])):
-                if '.' in station_tmp: continue
-                if station_tmp != station: other_stations.append(station_tmp)
+    for station in args.s.split('    '):
+        position = args.pos
+        print('Start processing ' + station)
+        other_stations = []
+        for station_tmp in os.listdir('/'.join([data_folder_prefix, position])):
+            if '.' in station_tmp: continue
+            if station_tmp != station: other_stations.append(station_tmp)
 
-            csv_path = '/'.join([data_folder_prefix, position])
+        csv_path = '/'.join([data_folder_prefix, position])
 
-            print(csv_path, station, other_stations, str(hour), args.target)
+        for hour in range(1, 25):
             gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target)
-            return
 
 
 def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name):
@@ -48,33 +47,80 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     wr.writerow(header)
 
+    format = '%d.%m.%Y %H:%M:%S'
+
+    date_continue = [True for i in range(len(other_stations_readers))]
     while row != None:
         try:
             row = next(target_reader)
             date_check_str = row[0]
+            try:
+                cur_datetime = datetime.strptime(date_check_str, format)
+            except ValueError:
+                date_check_str = date_check_str.replace(' 24:', ' 23:')
+                cur_datetime = datetime.strptime(date_check_str, format)
+                cur_datetime += timedelta(hours=1)
             # print(date_check_str)
             data_point = row
             # for osr in other_stations_readers:
-            date_continue = [True for i in range(len(other_stations_readers))]
             for i, osr in enumerate(other_stations_readers):
+                # print(date_continue)
                 try:
                     if date_continue[i] is True:
                         osr_row = next(osr)
+                        try:
+                            osr_row_time = datetime.strptime(osr_row[0], format)
+                        except ValueError:
+                            date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
+                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time += timedelta(hours=1)
                     else:
                         osr_row = date_continue[i]
+                        try:
+                            osr_row_time = datetime.strptime(osr_row[0], format)
+                        except ValueError:
+                            # print('err: ' + osr_row[0])
+                            date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
+                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time += timedelta(hours=1)
                 except StopIteration as e:
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print(other_stations[i])
                     row = None
                     break
 
-                if osr_row[0] == date_check_str:
+                # print(date_check_str)
+                # print(osr_row[0])
+
+
+                if cur_datetime == osr_row_time:
                     date_continue[i] = True
                     osr_five = osr_row[2:3] + osr_row[482:486]
                     data_point.extend(osr_five)
-                else:
+                elif cur_datetime > osr_row_time:
+                    while cur_datetime > osr_row_time:
+                        osr_row = next(osr)
+                        try:
+                            osr_row_time = datetime.strptime(osr_row[0], format)
+                        except ValueError:
+                            # print('err: ' + osr_row[0])
+                            date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
+                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time += timedelta(hours=1)
+
+                if osr_row_time == cur_datetime:
+                    date_continue[i] = True
+                    osr_five = osr_row[2:3] + osr_row[482:486]
+                    data_point.extend(osr_five)
+                elif cur_datetime < osr_row_time:
                     date_continue[i] = osr_row[:]
                     data_point.extend([-1,-1,-1,-1,-1])
+                    # print(cur_datetime)
+                    # print(other_stations[i])
+                    # print(cur_datetime)
+                    # print(osr_row_time)
+
+                    # print('here')
 
             wr.writerow(data_point)
         except StopIteration as e:
