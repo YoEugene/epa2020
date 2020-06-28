@@ -120,7 +120,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
             except StopIteration:
                 row = None
-                print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
+                # print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
 
 
 if __name__ == "__main__":
