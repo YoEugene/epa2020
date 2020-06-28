@@ -3,6 +3,7 @@ import os
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
+parser.add_argument('-pos', help='position')
 args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH']
@@ -21,7 +22,7 @@ data_folder_prefix = './data'
 def main():
     for station in args.s.split('  '):
 
-        for position in ['Central']:
+        for position in [args.pos]:
         # for station in os.listdir('/'.join([data_folder_prefix, position])):
             if '.' in station: continue
             print(station)
