@@ -33,10 +33,10 @@ for position in [args.pos]:
             for hour in range(1,14):
                 hour = str(hour)
                 
-                df = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2015_2018.csv')
+                df = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2015_2018_nearby.csv')
                 X_train, y_train = df.drop(['PM2.5_TARGET','TIME'], axis=1), df['PM2.5_TARGET']
 
-                df_test = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2019.csv')
+                df_test = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2019_nearby.csv')
                 X_test, y_test = df_test.drop(['PM2.5_TARGET','TIME'], axis=1), df_test['PM2.5_TARGET']
 
                 reg = GradientBoostingRegressor(random_state=42)
