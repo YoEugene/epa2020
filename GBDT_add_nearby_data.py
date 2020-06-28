@@ -25,11 +25,13 @@ def main():
         csv_path = '/'.join([data_folder_prefix, position])
 
         for hour in range(1, 25):
-            gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target)
+            # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
+            gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
+            gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
 
 
-def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name):
-    output = open('/'.join([csv_path, target_station, hour, args.o]), "w+")
+def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name, output_csv_name):
+    output = open('/'.join([csv_path, target_station, hour, output_csv_name]), "w+")
     wr = csv.writer(output)
 
     target_reader = csv.reader(open('/'.join([csv_path, target_station, hour, target_csv_name]), newline=''))
