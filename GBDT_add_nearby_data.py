@@ -24,7 +24,7 @@ def main():
 
         csv_path = '/'.join([data_folder_prefix, position])
 
-        for hour in range(1, 25):
+        for hour in range(1, 14):
             # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
             gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
             gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
