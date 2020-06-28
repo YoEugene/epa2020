@@ -1,6 +1,10 @@
 import os
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
+parser = argparse.ArgumentParser()
+parser.add_argument('-s', help='stations')
+parser.add_argument('-pos', help='position')
+args = parser.parse_args()
 
 # Import relevant items
 import pandas as pd
@@ -13,12 +17,12 @@ import math
 
 data_folder_prefix = './data'
 
-finished_stations = ['竹山站']
+finished_stations = []
 
 # Import CSV file into a dataframe
-for position in ['South']:
+for position in [args.pos]:
     print('===========' + position + '===========')
-    for station in reversed(os.listdir('/'.join([data_folder_prefix, position]))):
+    for station in args.s.split('  '):
         if station in finished_stations: continue
         # print('Start training on: ' + station)
         try:

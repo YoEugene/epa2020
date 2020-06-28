@@ -5,6 +5,8 @@ import csv
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-y', help='years')
+parser.add_argument('-s', help='stations')
+parser.add_argument('-pos', help='position')
 args = parser.parse_args()
 
 data_folder_prefix = './data'
@@ -17,6 +19,33 @@ year_folders = [
 ]
 # means = [0, 17.5, 23, 24.4, 1.9, 0.64, 0.2, 10.35, 23.84, 34.18, 38.30, 0.226, 75.75, 2.91, 2.11, 164.24, 164.68, 1.92, 1.4386]
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']
+
+
+def main():
+    for position in args.pos.split(','):
+        if not args.s:
+            for station in os.listdir('/'.join([data_folder_prefix, position])):
+                if '.' in station: continue
+                csv_files = os.listdir('/'.join([data_folder_prefix, position, station]))
+                print(station)
+                for year in args.y.split(','):
+                    for csv_file in csv_files:
+                        if year == csv_file[:3]:
+                            raw_csv_path = '/'.join([data_folder_prefix, position, station, csv_file])
+                            lstm_csv_path = '/'.join([data_folder_prefix, position, station, str(int(year)+1911) + '.csv'])
+                            raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(int(year)+1911), position, station)
+        else:
+            for station in args.s.split(','):
+                if '.' in station: continue
+                csv_files = os.listdir('/'.join([data_folder_prefix, position, station]))
+                print(station)
+                for year in args.y.split(','):
+                    for csv_file in csv_files:
+                        if year == csv_file[:3]:
+                            raw_csv_path = '/'.join([data_folder_prefix, position, station, csv_file])
+                            lstm_csv_path = '/'.join([data_folder_prefix, position, station, str(int(year)+1911) + '.csv'])
+                            raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(int(year)+1911), position, station)
+            
 
 
 def gen_day_empty(date_str, day_of_year, month):
@@ -117,20 +146,6 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, position, station):
     #     print(raw_csv)
     #     print(repr(e))
     #     return
-
-
-def main():
-    for position in ['Central', 'North', 'South']:
-        for station in os.listdir('/'.join([data_folder_prefix, position])):
-            if '.' in station: continue
-            csv_files = os.listdir('/'.join([data_folder_prefix, position, station]))
-            print(station)
-            for year in args.y.split(','):
-                for csv_file in csv_files:
-                    if year == csv_file[:3]:
-                        raw_csv_path = '/'.join([data_folder_prefix, position, station, csv_file])
-                        lstm_csv_path = '/'.join([data_folder_prefix, position, station, str(int(year)+1911) + '.csv'])
-                        raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(int(year)+1911), position, station)
 
 
 if __name__ == '__main__':

@@ -15,9 +15,6 @@ data_folder_prefix = './data'
 # 3. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: avg_3hr, avg_6hr, avg_12hr
 # 4. hour of day, day of year, month, weekday
 
-# def gen_day_empty(date_str, day_of_year, month):
-#     return {i: [date_str + ' ' + format(i, '02d') + ':00:00'] + [15 for xx in range(len(features)-1)] + [str(day_of_year % 365), str(i), str(day_of_year % 7), month] for i in range(1, 25)}
-
 
 def main():
     for station in args.s.split('  '):
@@ -45,8 +42,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
     with open(lstm_csv_path, newline='') as f:
         reader = csv.reader(f)
-
-        header = next(reader)
+        next(reader)
 
         row_48 = []
 
@@ -55,12 +51,13 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
             row_48.append(row)
 
         flag = True
-        header = ['PM2.5_TARGET']
+        header = ['TIME', 'PM2.5_TARGET']
         while row != None:
             row_48_t = list(map(list, zip(*row_48)))
             data_point = []
             try:
                 row = next(reader)
+                data_point.append(row[0])
                 data_point.append(row[1])
                 for feature_ind in [1,2,4,5,6,7,8,9,10,13,14]:
                     for hour_back in range(1, 37):
@@ -76,22 +73,10 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                     for hour_avg in [3,6,12,24]:
                         if flag:
                             header.append(features[feature_ind] + '_AVG' + str(hour_avg))
-                        # hour_sum = 0
-                        # cttr = 0
-                        # print(row_48_t[feature_ind])
                         if hour_offset == 1:
                             avg = sum([float(s) for s in row_48_t[feature_ind][-hour_avg:]])/hour_avg
                         else:
                             avg = sum([float(s) for s in row_48_t[feature_ind][-hour_avg-hour_offset+1:-hour_offset+1]])/hour_avg
-                        # return
-                        # print(avg)
-                        # for hour_back in range(1, hour_avg+1):
-                        #     if row_48[-hour_offset-hour_back+1][feature_ind] != '':
-                        #         hour_sum += float(row_48[-hour_offset-hour_back+1][feature_ind])
-                                # cttr += 1
-                        # avg = float("%.2f" % (hour_sum / cttr))
-                        # if hour_avg != cttr: print('WTF')
-                        # print(hour_avg, cttr, avg)
                         data_point.append(avg)
                 # for feature_ind in [1,2,4,5,6,7,8,9,10,13,14]:
                 #     for hour_back in range(2, 13):
@@ -101,15 +86,12 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                 #         # print(divtsqr_value)
                 #         data_point.append(divtsqr_value)
 
-                # print(data_point[0])
-                # print(len(data_point))
                 data_point.extend(row[-4:])
                 if flag:
                     header.extend(['DAY_OF_YEAR','HOUR','WEEKDAY','MONTH'])
-                    # print(len(header))
-                    # print(len(data_point))
                     wr.writerow(header)
                     flag = False
+
                 # print(data_point)
 
                 wr.writerow(data_point)
@@ -120,7 +102,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
             except StopIteration:
                 row = None
-                # print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
+                print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
 
 
 if __name__ == "__main__":
