@@ -4,7 +4,7 @@ from collections import defaultdict
 import csv
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('-y', help='foo help')
+parser.add_argument('-y', help='years')
 args = parser.parse_args()
 
 data_folder_prefix = './data'

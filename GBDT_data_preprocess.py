@@ -1,5 +1,9 @@
 import csv
 import os
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-s', help='stations')
+args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH']
 data_folder_prefix = './data'
@@ -15,8 +19,10 @@ data_folder_prefix = './data'
 
 
 def main():
-    for position in ['Central', 'North', 'South']:
-        for station in os.listdir('/'.join([data_folder_prefix, position])):
+    for station in args.s.split('  '):
+
+        for position in ['Central']:
+        # for station in os.listdir('/'.join([data_folder_prefix, position])):
             if '.' in station: continue
             print(station)
             for hour in range(1, 14):  # build data for prediction hour_1 ~ hour_13
