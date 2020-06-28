@@ -70,7 +70,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
                 if osr_row[0] == date_check_str:
                     date_continue[i] = True
-                    osr_five = osr_row[1:2] + osr_row[481:485]
+                    osr_five = osr_row[2:3] + osr_row[482:486]
                     data_point.extend(osr_five)
                 else:
                     date_continue[i] = osr_row[:]
