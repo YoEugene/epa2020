@@ -52,7 +52,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
         try:
             row = next(target_reader)
             date_check_str = row[0]
-            print(date_check_str)
+            # print(date_check_str)
             data_point = row
             # for osr in other_stations_readers:
             date_continue = [True for i in range(len(other_stations_readers))]
