@@ -32,8 +32,12 @@ for position in [args.pos]:
         if station in finished_stations: continue
         print('Start training on: ' + station)
         # try:
-        MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
+        # MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
         for hour in range(1,14):
+            files = os.listdir('/'.join([data_folder_prefix, position, str(hour)]))
+            if 'model.pickle' in files:
+                print('Skip ' + str(hour))
+                continue
             hour = str(hour)
             
             df = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2015_2018_nearby.csv')
@@ -49,9 +53,9 @@ for position in [args.pos]:
                 pickle.dump(reg, f)
                 print('hour ' + str(hour) + ' saved.')
 
-            MAE_list.append(str(sum(abs(reg.predict(X_test) - y_test))/len(X_test)))
+            # MAE_list.append(str(sum(abs(reg.predict(X_test) - y_test))/len(X_test)))
             # print(MAE_list[-1])
-        print(','.join(MAE_list))
+        # print(','.join(MAE_list))
         # except Exception as e:
         #     print(repr(e))
         #     continue
