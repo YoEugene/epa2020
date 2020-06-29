@@ -22,8 +22,6 @@ import pandas as pd
 
 data_folder_prefix = './data'
 
-finished_stations = []
-
 # Import CSV file into a dataframe
 for position in [args.pos]:
     print('===========' + position + '===========')

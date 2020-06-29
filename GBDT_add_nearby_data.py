@@ -131,6 +131,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
             print(repr(e))
 
     print(target_station + ' ' + hour + ' done.')
+    output.close()
 
 if __name__ == '__main__':
     main()
