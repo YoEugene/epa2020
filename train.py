@@ -34,7 +34,7 @@ for position in [args.pos]:
         # try:
         # MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
         for hour in range(1,14):
-            files = os.listdir('/'.join([data_folder_prefix, position, str(hour)]))
+            files = os.listdir('/'.join([data_folder_prefix, position, station, str(hour)]))
             if 'model.pickle' in files:
                 print('Skip ' + str(hour))
                 continue
