@@ -74,9 +74,9 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                         if flag:
                             header.append(features[feature_ind] + '_AVG' + str(hour_avg))
                         if hour_offset == 1:
-                            avg = sum([float(s) for s in row_48_t[feature_ind][-hour_avg:]])/hour_avg
+                            avg = round(sum([float(s) for s in row_48_t[feature_ind][-hour_avg:]])/hour_avg, 3)
                         else:
-                            avg = sum([float(s) for s in row_48_t[feature_ind][-hour_avg-hour_offset+1:-hour_offset+1]])/hour_avg
+                            avg = round(sum([float(s) for s in row_48_t[feature_ind][-hour_avg-hour_offset+1:-hour_offset+1]])/hour_avg, 3)
                         data_point.append(avg)
                 # for feature_ind in [1,2,4,5,6,7,8,9,10,13,14]:
                 #     for hour_back in range(2, 13):

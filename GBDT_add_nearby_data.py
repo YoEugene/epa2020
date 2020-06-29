@@ -47,6 +47,8 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     for i in range(len(other_stations_readers)):
         header.extend(['PM2.5_NEARBY' + str(i+1) + '_T1', 'PM2.5_NEARBY' + str(i+1) + '_AVG3', 'PM2.5_NEARBY' + str(i+1) + '_AVG6', 'PM2.5_NEARBY' + str(i+1) + '_AVG12', 'PM2.5_NEARBY' + str(i+1) + '_AVG24'])
 
+    # print(len(header))
+
     wr.writerow(header)
 
     format = '%d.%m.%Y %H:%M:%S'
@@ -109,20 +111,18 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
                             date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
                             osr_row_time = datetime.strptime(date_check_tmp, format)
                             osr_row_time += timedelta(hours=1)
-
-                if osr_row_time == cur_datetime:
-                    date_continue[i] = True
-                    osr_five = osr_row[2:3] + osr_row[482:486]
-                    data_point.extend(osr_five)
+                    if cur_datetime == osr_row_time:
+                        date_continue[i] = True
+                        osr_five = osr_row[2:3] + osr_row[482:486]
+                        data_point.extend(osr_five)
+                    elif cur_datetime < osr_row_time:
+                        date_continue[i] = osr_row[:]
+                        data_point.extend([-1,-1,-1,-1,-1])
                 elif cur_datetime < osr_row_time:
                     date_continue[i] = osr_row[:]
                     data_point.extend([-1,-1,-1,-1,-1])
-                    # print(cur_datetime)
-                    # print(other_stations[i])
-                    # print(cur_datetime)
-                    # print(osr_row_time)
-
                     # print('here')
+            # print(len(data_point))
 
             wr.writerow(data_point)
         except StopIteration as e:
