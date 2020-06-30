@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-pos', help='position')
 parser.add_argument('-verbose', help='verbose')
+parser.add_argument('-o', help='output')
 args = parser.parse_args()
 
 verbose = args.verbose if args.verbose else 0
@@ -19,6 +20,8 @@ import pandas as pd
 # import datetime as dt
 # from datetime import datetime
 # import math
+
+output_file = args.o if args.o else 'model.pickle'
 
 data_folder_prefix = './data'
 
@@ -33,7 +36,7 @@ for position in [args.pos]:
         # MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
         for hour in range(1,14):
             files = os.listdir('/'.join([data_folder_prefix, position, station, str(hour)]))
-            if 'model.pickle' in files:
+            if output_file in files:
                 print('Skip ' + str(hour))
                 continue
             hour = str(hour)
@@ -47,7 +50,7 @@ for position in [args.pos]:
             reg = GradientBoostingRegressor(verbose=verbose, random_state=42)
             reg.fit(X_train, y_train)
 
-            with open('/'.join([data_folder_prefix, position, station, str(hour), 'model.pickle']), 'wb') as f:
+            with open('/'.join([data_folder_prefix, position, station, str(hour), output_file]), 'wb') as f:
                 pickle.dump(reg, f)
                 print('hour ' + str(hour) + ' saved.')
 
