@@ -22,15 +22,15 @@ import pandas as pd
 # import math
 
 output_file = args.o if args.o else 'model.pickle'
+stations = os.listdir('/'.join([data_folder_prefix, position])) if not args.s else args.s.split('  ')
 
 data_folder_prefix = './data'
 
 # Import CSV file into a dataframe
 for position in [args.pos]:
     print('===========' + position + '===========')
-    # for station in reversed(os.listdir('/'.join([data_folder_prefix, position]))):
-    for station in args.s.split('  '):
-        if station in finished_stations: continue
+    for station in stations:
+        if '.' in station: continue
         print('Start training on: ' + station)
         # try:
         # MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
