@@ -93,7 +93,7 @@ def main(position=None):
 
                 MAE_list.append(str(sum(abs(reg.predict(X_test) - y_test))/len(X_test)))
                 print(MAE_list[-1])
-            # print(','.join(MAE_list))
+            print(','.join(MAE_list))
             # except Exception as e:
             #     print(repr(e))
             #     continue
