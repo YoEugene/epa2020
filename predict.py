@@ -44,7 +44,7 @@ def main():
                 if args.m in files:
                     with open('/'.join([data_folder_prefix, position, station, str(hour), args.m]), 'rb') as model:
                         reg = pickle.load(model)
-                        df_true = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2019.csv')
+                        df_true = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2019_nearby.csv')
                         X_true, y_true = df_true.drop(['PM2.5_TARGET','TIME'], axis=1), df_true['PM2.5_TARGET']
                         y_pred = pd.Series(reg.predict(X_true))
                         y_pred = y_pred.round(2)

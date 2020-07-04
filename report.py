@@ -15,9 +15,9 @@ args = parser.parse_args()
 
 data_folder_prefix = './data'
 
-def main(s, pos, o):
+def main():
     # Import CSV file into a dataframe
-    df = pd.read_csv('./data/全 70 測站誤差大表.csv')
+    df = pd.read_csv('./data/error_sheet_chiayi.csv')
     df['time'] = pd.to_datetime(df['time'])
 
     df_o = pd.DataFrame(columns=['station','month','MAE_T1','MAE_T2','MAE_T3','MAE_T4','MAE_T5','MAE_T6','MAE_T7','MAE_T8','MAE_T9','MAE_T10','MAE_T11','MAE_T12','MAE_T13'])
@@ -47,4 +47,4 @@ def main(s, pos, o):
 
 
 if __name__ == '__main__':
-    main(s, pos, o)
+    main()

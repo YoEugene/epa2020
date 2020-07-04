@@ -31,8 +31,8 @@ parameters = {
     "max_depth":[3,5],
     "max_features":["sqrt", None],
     # "criterion": ["friedman_mse", "mae"],
-    # "subsample":[1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
-    "n_estimators":[30, 50, 100]
+    "subsample":[0.6, 1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
+    "n_estimators":[30, 50, 100, 150]
 }
 
 # parameters = {
