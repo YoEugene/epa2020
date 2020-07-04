@@ -25,7 +25,7 @@ import pandas as pd
 data_folder_prefix = './data'
 
 parameters = {
-    "learning_rate": [0.05, 0.1],
+    "learning_rate": [0.01, 0.05, 0.1],
     # "min_samples_split": [0.01, 2],
     # "min_samples_leaf": [0.01, 1],
     "max_depth":[3,5],
