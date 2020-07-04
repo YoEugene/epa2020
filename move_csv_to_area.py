@@ -19,8 +19,9 @@ area_relations = {
 }
 
 
-def main():
-    for year_folder in year_folders:
+def main(train_begin_year=2015, train_end_year=2108, test_begin_year=2019, test_end_year=2019):
+    for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
+        year_folder = str(year) + '_raw'
         print('============= Start on year: ' + year_folder + ' =============')
         for area_folder in os.listdir('/'.join([data_folder_prefix, year_folder])):
             if '空品區' in area_folder:
@@ -44,4 +45,4 @@ def copy_file_to_path(file_path, target_path):
 
 
 if __name__ == '__main__':
-    main()
+    main(train_begin_year, train_end_year, test_begin_year, test_end_year)

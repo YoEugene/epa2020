@@ -1,0 +1,13 @@
+{
+    "variable": "PM2.5",
+    "model": "GBDT",
+    "area": "North",
+    "station": "宜蘭站",
+    "train_begin_year": 2015,
+    "train_end_year": 2018,
+    "test_begin_year": 2019,
+    "test_end_year": 2019,
+    "report": "MAE",
+    "data_root_folder": "EPA_Station_rawdata",
+    // "grid_search": true
+}
