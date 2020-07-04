@@ -25,14 +25,14 @@ import pandas as pd
 data_folder_prefix = './data'
 
 parameters = {
-    # "learning_rate": [0.05, 0.1],
-    # "min_samples_split": [0.1, 2],
-    # "min_samples_leaf": [0.1, 1],
-    # "max_depth":[3,5,8,10],
-    # "max_features":["log2", "sqrt"],
-    "criterion": ["friedman_mse", "mae"],
+    "learning_rate": [0.05, 0.1],
+    # "min_samples_split": [0.01, 2],
+    # "min_samples_leaf": [0.01, 1],
+    "max_depth":[3,5,8],
+    "max_features":["log2", "sqrt"],
+    # "criterion": ["friedman_mse", "mae"],
     # "subsample":[1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
-    "n_estimators":[10, 20]
+    "n_estimators":[30, 50, 100]
 }
 
 # parameters = {
