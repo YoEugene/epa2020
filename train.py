@@ -28,8 +28,8 @@ parameters = {
     "learning_rate": [0.05, 0.1],
     # "min_samples_split": [0.01, 2],
     # "min_samples_leaf": [0.01, 1],
-    "max_depth":[3,5,8],
-    "max_features":["log2", "sqrt"],
+    "max_depth":[3,5],
+    "max_features":["sqrt", None],
     # "criterion": ["friedman_mse", "mae"],
     # "subsample":[1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
     "n_estimators":[30, 50, 100]
@@ -59,14 +59,14 @@ def main(position=None):
             MAE_list = [position, station, 'PM2.5', '2019 (一整年)']
             for hour in range(1,14):
                 files = os.listdir('/'.join([data_folder_prefix, position, station, str(hour)]))
-                
+
                 # # Skip hour if model is saved
                 # if output_file in files:
                     # print('Skip ' + str(hour))
                     # continue
-                
+
                 hour = str(hour)
-                
+
                 df = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2015_2018_nearby.csv')
                 X_train, y_train = df.drop(['PM2.5_TARGET','TIME'], axis=1), df['PM2.5_TARGET']
 
@@ -78,7 +78,7 @@ def main(position=None):
                 # reg.fit(X_train, y_train)
 
                 # Grid Search for Time series
-                cv = GapWalkForward(n_splits=2, gap_size=0, test_size=1)
+                cv = GapWalkForward(n_splits=5, test_size=1)
 
                 gbr = GradientBoostingRegressor(random_state=42)
                 reg = GridSearchCV(gbr, param_grid=parameters, cv=cv, n_jobs=-1)
