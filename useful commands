@@ -1,0 +1,50 @@
+scp yoeugene@35.194.145.173:epa2020/data/monthly_error_all.csv  ~/Desktop/monthly_error_all.csv
+
+python3 GBDT_add_nearby_data.py -s '仁武站    前金站    前鎮站    善化站    嘉義站    大寮站    安南站' -pos South
+python3 GBDT_add_nearby_data.py -s '斗六站    新港站    新營站    朴子站    林園站    楠梓站    橋頭站' -pos South
+python3 GBDT_add_nearby_data.py -s '左營站    復興站    恆春站    臺西站    鳳山站    麥寮站    崙背站' -pos South
+python3 GBDT_add_nearby_data.py -s '小港站    屏東站    潮州站    美濃站    臺南站' -pos South
+
+python3 GBDT_add_nearby_data.py -s '沙鹿站    竹山站    線西站    西屯站    豐原站' -pos Central
+python3 GBDT_add_nearby_data.py -s '二林站    南投站    埔里站    大里站    彰化站    忠明站' -pos Central
+
+python3 GBDT_add_nearby_data.py -s '三義站    中壢站    冬山站    土城站    士林站' -pos North
+python3 GBDT_add_nearby_data.py -s '淡水站    竹東站    菜寮站    萬里站    陽明站' -pos North
+python3 GBDT_add_nearby_data.py -s '宜蘭站    新店站    新莊站    板橋站    桃園站' -pos North
+python3 GBDT_add_nearby_data.py -s '大園站    平鎮站    新竹站    松山站    林口站    永和站' -pos North
+python3 GBDT_add_nearby_data.py -s '龍潭站    三重站    中山站    古亭站    基隆站    大同站' -pos North
+python3 GBDT_add_nearby_data.py -s '汐止站    湖口站    苗栗站    萬華站    觀音站    頭份站' -pos North
+
+
+python3 GBDT_data_preprocess.py -pos South -s "潮州站  美濃站  臺南站  臺西站  鳳山站  麥寮站"
+python3 GBDT_data_preprocess.py -pos South -s "新港站  新營站  朴子站  林園站  楠梓站  橋頭站"
+python3 GBDT_data_preprocess.py -pos South -s "小港站  屏東站  崙背站  左營站  復興站  恆春站  斗六站"
+python3 GBDT_data_preprocess.py -pos South -s "仁武站  前金站  前鎮站  善化站  嘉義站  大寮站  安南站"
+
+python3 GBDT_data_preprocess.py -s "沙鹿站  竹山站  線西站  西屯站  豐原站" -pos Central
+python3 GBDT_data_preprocess.py -s "二林站  南投站  埔里站  大里站  彰化站  忠明站" -pos Central
+
+python3 GBDT_data_preprocess.py -s "新莊站  板橋站  桃園站  汐止站  湖口站  苗栗站" -pos North
+python3 GBDT_data_preprocess.py -s "萬華站  觀音站  頭份站" -pos North
+python3 GBDT_data_preprocess.py -s "中山站  古亭站  基隆站  大同站  宜蘭站  新店站" -pos North
+python3 GBDT_data_preprocess.py -s "竹東站  菜寮站  萬里站  陽明站  龍潭站  三重站" -pos North
+python3 GBDT_data_preprocess.py -s "三義站  中壢站  冬山站  土城站  士林站  大園站" -pos North
+python3 GBDT_data_preprocess.py -s "平鎮站  新竹站  松山站  林口站  永和站  淡水站" -pos North
+
+
+python3 train.py -pos North -s "新莊站  板橋站  桃園站  汐止站  湖口站  苗栗站"
+python3 train.py -pos North -s "萬華站  觀音站  頭份站  基隆站  陽明站"
+python3 train.py -pos North -s "中山站  古亭站  大同站  宜蘭站  新店站"
+python3 train.py -pos North -s "竹東站  菜寮站  萬里站  龍潭站  三重站"
+python3 train.py -pos North -s "三義站  中壢站  冬山站  土城站  士林站  大園站"
+python3 train.py -pos North -s "平鎮站  新竹站  松山站  林口站  永和站  淡水站"
+
+python3 train.py -pos North -s "湖口站  基隆站  宜蘭站  龍潭站  士林站  永和站"
+
+python3 train.py -pos Central -s "沙鹿站  竹山站  線西站  西屯站  豐原站"
+python3 train.py -pos Central -s "二林站  南投站  埔里站  大里站  彰化站  忠明站"
+
+python3 train.py -pos South -s "潮州站  美濃站  臺南站  臺西站  鳳山站  麥寮站"
+python3 train.py -pos South -s "新港站  新營站  朴子站  林園站  楠梓站  橋頭站"
+python3 train.py -pos South -s "小港站  屏東站  崙背站  左營站  復興站  恆春站  斗六站"
+python3 train.py -pos South -s "仁武站  前金站  前鎮站  善化站  嘉義站  大寮站  安南站"

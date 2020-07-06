@@ -41,7 +41,7 @@ def main(cfg):
         areas = cfg['areas']
 
     for area in areas:
-        print('################ Processing area: ' + area_folder + ' ################')
+        print('################ Processing area: ' + area + ' ################')
         if not args.s and not cfg['stations']:
             stations = os.listdir('/'.join([data_root_folder, area]))
         elif args.s:
