@@ -5,7 +5,7 @@ import numpy as np
 import datetime as dt
 from datetime import datetime
 import math
-
+from utils import read_config
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
@@ -15,7 +15,7 @@ args = parser.parse_args()
 
 data_folder_prefix = './data'
 
-def main():
+def main(cfg):
     # Import CSV file into a dataframe
     df = pd.read_csv('./data/error_sheet_chiayi.csv')
     df['time'] = pd.to_datetime(df['time'])
@@ -47,4 +47,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cfg = read_config()
+    main(cfg)

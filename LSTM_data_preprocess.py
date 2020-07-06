@@ -3,44 +3,63 @@ import os
 from collections import defaultdict
 import csv
 import argparse
+from utils import read_config
 parser = argparse.ArgumentParser()
-parser.add_argument('-y', help='years')
 parser.add_argument('-s', help='stations')
-parser.add_argument('-pos', help='position')
+parser.add_argument('-areas', help='areas')
 args = parser.parse_args()
 
-data_folder_prefix = './data'
-# means = [0, 17.5, 23, 24.4, 1.9, 0.64, 0.2, 10.35, 23.84, 34.18, 38.30, 0.226, 75.75, 2.91, 2.11, 164.24, 164.68, 1.92, 1.4386]
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']
 
+data_root_folder = "./EPA_Station_rawdata"
+train_begin_year = 2015  # default value
+train_end_year = 2018  # default value
+test_begin_year = 2019  # default value
+test_end_year = 2019  # default value
+target_variable = "PM2.5"
 
-def main(train_begin_year, train_end_year, test_begin_year, test_end_year, s, pos):
-    for position in [pos]:
-        if not args.s:
-            for station in os.listdir('/'.join([data_folder_prefix, position])):
-                if '.' in station: continue
-                csv_files = os.listdir('/'.join([data_folder_prefix, position, station]))
-                if station != s: continue
-                print(station)
-                for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
-                    for csv_file in csv_files:
-                        if str(int(year) - 1911) == csv_file[:3]:
-                            raw_csv_path = '/'.join([data_folder_prefix, position, station, csv_file])
-                            lstm_csv_path = '/'.join([data_folder_prefix, position, station, str(int(year)+1911) + '.csv'])
-                            raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), position, station)
-        else:
-            for station in args.s.split(','):
-                if '.' in station: continue
-                csv_files = os.listdir('/'.join([data_folder_prefix, position, station]))
-                if station != s: continue
-                print(station)
-                for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
-                    for csv_file in csv_files:
-                        if str(int(year) - 1911) == csv_file[:3]:
-                            raw_csv_path = '/'.join([data_folder_prefix, position, station, csv_file])
-                            lstm_csv_path = '/'.join([data_folder_prefix, position, station, str(int(year)+1911) + '.csv'])
-                            raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), position, station)
-            
+
+def main(cfg):
+    global data_root_folder
+    global train_begin_year
+    global train_end_year
+    global test_begin_year
+    global test_end_year
+    data_root_folder = cfg['data_root_folder']
+    train_begin_year = cfg['train_begin_year']
+    train_end_year = cfg['train_end_year']
+    test_begin_year = cfg['test_begin_year']
+    test_end_year = cfg['test_end_year']
+    global target_variable
+    target_variable = cfg['variable']
+
+    if not args.areas and not cfg['areas']:
+        areas = ["North", "South", "Central"]
+    elif args.areas:
+        areas = args.areas.split(',')
+    elif cfg['areas']:
+        areas = cfg['areas']
+
+    for area in areas:
+        print('################ Processing area: ' + area_folder + ' ################')
+        if not args.s and not cfg['stations']:
+            stations = os.listdir('/'.join([data_root_folder, area]))
+        elif args.s:
+            stations = args.s.split(',')
+        elif cfg['stations']:
+            stations = cfg['stations']
+
+        for station in stations:
+            if '.' in station: continue
+            if station not in os.listdir('/'.join([data_root_folder, area])): continue
+            csv_files = os.listdir('/'.join([data_root_folder, area, station]))
+            print('Converting station to LSTM format: ' + station)
+            for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
+                for csv_file in csv_files:
+                    if str(int(year) - 1911) == csv_file[:3]:
+                        raw_csv_path = '/'.join([data_root_folder, area, station, csv_file])
+                        lstm_csv_path = '/'.join([data_root_folder, area, station, str(year) + '.csv'])
+                        raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station)
 
 
 def gen_day_empty(date_str, day_of_year, month):
@@ -48,12 +67,13 @@ def gen_day_empty(date_str, day_of_year, month):
     return {i: [date_str + ' ' + format(i, '02d') + ':00:00'] + [0 for xx in range(len(features)-1)] + [str((day_of_year) % 365), str(i), str(datetime(year, mon, day).weekday()), month] for i in range(1, 25)}
 
 
-def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, position, station):
+def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
     # try:
+    # TODO train test begin end year
     if year == '2019':
         output = open(lstm_csv, "w")
     else:
-        lstm_csv = '/'.join([data_folder_prefix, position, station]) + '/2015_2018.csv'
+        lstm_csv = '/'.join([data_root_folder, area, station]) + '/' + str(train_begin_year) + '_' + str(train_end_year) + '.csv'
         if year == '2015':
             output = open(lstm_csv, "w")
         else:
@@ -70,7 +90,7 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, position, station):
         cur_date = year + '/01/01'
 
         last_n_hours_rows = defaultdict(list)
-        n_hours = 72  # 3 days
+        n_hours = 6  # hours
 
         for row in rows:
             if '測項' in row: continue  # pass first header row
@@ -144,4 +164,5 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, position, station):
 
 
 if __name__ == '__main__':
-    main(train_begin_year, train_end_year, test_begin_year, test_end_year, s, pos)
+    cfg = read_config()
+    main(cfg)

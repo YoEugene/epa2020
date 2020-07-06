@@ -3,13 +3,15 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
 import pickle
 import argparse
-from tscv import GapWalkForward
+from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-pos', help='position')
 parser.add_argument('-verbose', help='verbose')
 parser.add_argument('-o', help='output')
 parser.add_argument('-target', help='target')
+parser.add_argument('-gs', help='grid search')
+
 args = parser.parse_args()
 
 verbose = args.verbose if args.verbose is not None else 0
@@ -24,15 +26,16 @@ import pandas as pd
 # import math
 data_folder_prefix = './data'
 
-parameters = {
+param_grid = {
     "learning_rate": [0.01, 0.05, 0.1],
     # "min_samples_split": [0.01, 2],
     # "min_samples_leaf": [0.01, 1],
-    "max_depth":[3,5],
-    "max_features":["sqrt", None],
+    "max_depth": [3,5],
+    # "max_features":["sqrt", None],
     # "criterion": ["friedman_mse", "mae"],
-    "subsample":[0.6, 1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
-    "n_estimators":[30, 50, 100, 150]
+    # "subsample": [0.6, 1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
+    "n_estimators": [50, 100, 150]
+    # "n_estimators": [10, 20]
 }
 
 # parameters = {
@@ -45,7 +48,7 @@ parameters = {
 # }
 
 
-def main(position=None):
+def main(cfg):
     if not position: position = args.pos
     output_file = args.o if args.o else 'model.pickle'
     stations = os.listdir('/'.join([data_folder_prefix, position])) if not args.s else args.s.split('  ')
@@ -73,19 +76,37 @@ def main(position=None):
                 df_test = pd.read_csv('/'.join([data_folder_prefix, position, station, str(hour)]) + '/gbdt_2019_nearby.csv')
                 X_test, y_test = df_test.drop(['PM2.5_TARGET','TIME'], axis=1), df_test['PM2.5_TARGET']
 
-                # # Normal Train
-                # reg = GradientBoostingRegressor(verbose=verbose, random_state=42)
+                if args.gs and int(args.gs) == 1:
+                    # Simple Grid Search
+                    reg = GridSearchCV(GradientBoostingRegressor(random_state=42, verbose=int(verbose)), param_grid=param_grid, cv=3, n_jobs=-1)
+
+                    reg.fit(X_train, y_train)
+                    print(reg.best_params_)
+                    print(reg.best_score_)
+                else:
+                    # Normal Train
+                    reg = GradientBoostingRegressor(verbose=verbose, random_state=42)
+                    reg.fit(X_train, y_train)
+
+                # # Grid Search for Time series (Gap CV)
+                # cv = GapWalkForward(n_splits=5, test_size=1)
+
+                # gbr = GradientBoostingRegressor(random_state=42)
+                # reg = GridSearchCV(gbr, param_grid=parameters, cv=cv, n_jobs=-1)
                 # reg.fit(X_train, y_train)
+                # print(reg.best_estimator_)
+                # print(reg.best_params_)
+                # print(reg.best_score_)
 
-                # Grid Search for Time series
-                cv = GapWalkForward(n_splits=5, test_size=1)
-
-                gbr = GradientBoostingRegressor(random_state=42)
-                reg = GridSearchCV(gbr, param_grid=parameters, cv=cv, n_jobs=-1)
-                reg.fit(X_train, y_train)
-                print(reg.best_estimator_)
-                print(reg.best_params_)
-                print(reg.best_score_)
+                # # Grid Search for Time series (Nested CV)
+                # reg = NestedCV(model=GradientBoostingRegressor(random_state=42, verbose=int(verbose)), params_grid=param_grid,
+                #                outer_kfolds=3, inner_kfolds=3, n_jobs=-1)
+                #             #    cv_options={'sqrt_of_score': True, 
+                #             #                'recursive_feature_elimination': True, 
+                #             #                'rfe_n_features': 2})
+                # reg.fit(X_train, y_train)
+                # # print(reg.best_params_)
+                # # print(reg.best_score_)
 
                 with open('/'.join([data_folder_prefix, position, station, str(hour), output_file]), 'wb') as f:
                     pickle.dump(reg, f)
@@ -100,5 +121,5 @@ def main(position=None):
 
 
 if __name__ == '__main__':
-    # main(position)
-    main()
+    cfg = read_config()
+    main(cfg)

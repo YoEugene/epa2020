@@ -3,6 +3,7 @@ import pickle
 import argparse
 import pandas as pd
 import datetime as dt
+from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-pos', help='position')
@@ -22,7 +23,7 @@ def datetime_transform(date_str):
     return pd.to_datetime(date_str, format='%d.%m.%Y %H:%M:%S') + dt.timedelta(days=1)
 
 
-def main():
+def main(cfg):
     header_flag = True
     for position in args.pos.split(','):
         if not args.s:
@@ -68,4 +69,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cfg = read_config()
+    main(cfg)

@@ -2,42 +2,75 @@ import csv
 import os
 import argparse
 from datetime import datetime, timedelta
+from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
-parser.add_argument('-pos', help='position')
+parser.add_argument('-areas', help='areas')
 parser.add_argument('-o', help='output_name')
 parser.add_argument('-target', help='target_csv_name')
 args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH']
-data_folder_prefix = './data'
+
+data_root_folder = "./EPA_Station_rawdata"
+train_begin_year = 2015  # default value
+train_end_year = 2018  # default value
+test_begin_year = 2019  # default value
+test_end_year = 2019  # default value
+target_variable = "PM2.5"
 
 
-def main():
-    for station in args.s.split('    '):
-        position = args.pos
-        print('Start processing ' + station)
-        other_stations = []
-        for station_tmp in os.listdir('/'.join([data_folder_prefix, position])):
-            if '.' in station_tmp: continue
-            if station_tmp != station: other_stations.append(station_tmp)
+def main(cfg):
+    global data_root_folder
+    data_root_folder = cfg['data_root_folder']
 
-        csv_path = '/'.join([data_folder_prefix, position])
+    global target_variable
+    target_variable = cfg['variable']
 
-        for hour in range(1, 14):
-            # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
-            gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
-            gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
+    if not args.areas and not cfg['areas']:
+        areas = ["North", "South", "Central"]
+    elif args.areas:
+        areas = args.areas.split(',')
+    elif cfg['areas']:
+        areas = cfg['areas']
+
+    for area in areas:
+        print('################ Processing area: ' + area + ' ################')
+
+        if not args.s and not cfg['stations']:
+            stations = os.listdir('/'.join([data_root_folder, area]))
+        elif args.s:
+            stations = args.s.split(',')
+        elif cfg['stations']:
+            stations = cfg['stations']
+
+        for station in stations:
+            if '.' in station: continue
+            if station not in os.listdir('/'.join([data_root_folder, area])): continue
+            print('Adding nearby station data into: ' + station)
+
+            csv_path = '/'.join([data_root_folder, area])
+            other_stations = []
+            for station_tmp in os.listdir('/'.join([data_root_folder, area])):
+                if '.' in station_tmp: continue
+                if station_tmp != station: other_stations.append(station_tmp)
+
+            for hour in range(1, 14):
+                # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
+                gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
+                gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
 
 
 def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name, output_csv_name):
-    output = open('/'.join([csv_path, target_station, hour, output_csv_name]), "w+")
+    global target_variable
+
+    output = open('/'.join([csv_path, target_station, target_variable, hour, output_csv_name]), "w+")
     wr = csv.writer(output)
 
-    target_reader = csv.reader(open('/'.join([csv_path, target_station, hour, target_csv_name]), newline=''))
+    target_reader = csv.reader(open('/'.join([csv_path, target_station, target_variable, hour, target_csv_name]), newline=''))
     other_stations_readers = []
     for ost in other_stations:
-        other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, hour, target_csv_name]), newline='')))
+        other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
 
     row = next(target_reader)
     header = row
@@ -45,7 +78,13 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
         osr_row = next(osr)
 
     for i in range(len(other_stations_readers)):
-        header.extend(['PM2.5_NEARBY' + str(i+1) + '_T1', 'PM2.5_NEARBY' + str(i+1) + '_AVG3', 'PM2.5_NEARBY' + str(i+1) + '_AVG6', 'PM2.5_NEARBY' + str(i+1) + '_AVG12', 'PM2.5_NEARBY' + str(i+1) + '_AVG24'])
+        header.extend([
+                        target_variable + '_NEARBY' + str(i+1) + '_T1', 
+                        target_variable + '_NEARBY' + str(i+1) + '_AVG3', 
+                        target_variable + '_NEARBY' + str(i+1) + '_AVG6', 
+                        target_variable + '_NEARBY' + str(i+1) + '_AVG12', 
+                        target_variable + '_NEARBY' + str(i+1) + '_AVG24',
+                    ])
 
     # print(len(header))
 
@@ -134,4 +173,5 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     output.close()
 
 if __name__ == '__main__':
-    main()
+    cfg = read_config()
+    main(cfg)

@@ -1,38 +1,67 @@
 import csv
 import os
 import argparse
+from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
-parser.add_argument('-pos', help='position')
+parser.add_argument('-areas', help='areas')
 args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH']
-data_folder_prefix = './data'
 
 # features: 
-# 1. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: pre 1-30
+# 1. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: pre 1-36
 # 2. RH, WIND_DIREC, WIND_SPEED, WS_HR, WD_HR, AMB_TEMP: pre 1-13
-# 3. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: avg_3hr, avg_6hr, avg_12hr
+# 3. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: avg_3hr, avg_6hr, avg_12hr, avg_24hr
 # 4. hour of day, day of year, month, weekday
 
+data_root_folder = "./EPA_Station_rawdata"
+train_begin_year = 2015  # default value
+train_end_year = 2018  # default value
+test_begin_year = 2019  # default value
+test_end_year = 2019  # default value
+target_variable = "PM2.5"
 
-def main():
-    for station in args.s.split('  '):
 
-        for position in [args.pos]:
-        # for station in os.listdir('/'.join([data_folder_prefix, position])):
+def main(cfg):
+    global data_root_folder
+    data_root_folder = cfg['data_root_folder']
+
+    global target_variable
+    target_variable = cfg['variable']
+
+    if not args.areas and not cfg['areas']:
+        areas = ["North", "South", "Central"]
+    elif args.areas:
+        areas = args.areas.split(',')
+    elif cfg['areas']:
+        areas = cfg['areas']
+
+    for area in areas:
+        print('################ Processing area: ' + area + ' ################')
+        if not args.s and not cfg['stations']:
+            stations = os.listdir('/'.join([data_root_folder, area]))
+        elif args.s:
+            stations = args.s.split(',')
+        elif cfg['stations']:
+            stations = cfg['stations']
+
+        for station in stations:
             if '.' in station: continue
-            print(station)
+            if station not in os.listdir('/'.join([data_root_folder, area])): continue
+            print('Converting station to GBDT format: ' + station)
             for hour in range(1, 14):  # build data for prediction hour_1 ~ hour_13
-                lstm_csv_path = '/'.join([data_folder_prefix, position, station, '2015_2018.csv'])
-                gbdt_csv_path = '/'.join([data_folder_prefix, position, station, str(hour)])
+                lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
+                gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
                 lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2015_2018.csv', hour)
 
-                lstm_csv_path = '/'.join([data_folder_prefix, position, station, '2019.csv'])
-                gbdt_csv_path = '/'.join([data_folder_prefix, position, station, str(hour)])
+                lstm_csv_path = '/'.join([data_root_folder, area, station, '2019.csv'])
+                gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
                 lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2019.csv', hour)
 
 def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
+    global target_variable
+
     if not os.path.exists(gbdt_csv_path):
         os.makedirs(gbdt_csv_path)
 
@@ -51,7 +80,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
             row_48.append(row)
 
         flag = True
-        header = ['TIME', 'PM2.5_TARGET']
+        header = ['TIME', target_variable + '_TARGET']
         while row != None:
             row_48_t = list(map(list, zip(*row_48)))
             data_point = []
@@ -78,13 +107,6 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                         else:
                             avg = round(sum([float(s) for s in row_48_t[feature_ind][-hour_avg-hour_offset+1:-hour_offset+1]])/hour_avg, 3)
                         data_point.append(avg)
-                # for feature_ind in [1,2,4,5,6,7,8,9,10,13,14]:
-                #     for hour_back in range(2, 13):
-                #         if flag:
-                #             header.append(features[feature_ind] + '_DIVTSQR_T' + str(hour_back))
-                #         divtsqr_value = float(row_48[-hour_offset-hour_back+1][feature_ind]) / (hour_back ** 2)
-                #         # print(divtsqr_value)
-                #         data_point.append(divtsqr_value)
 
                 data_point.extend(row[-4:])
                 if flag:
@@ -106,4 +128,5 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
 
 if __name__ == "__main__":
-    main()
+    cfg = read_config()
+    main(cfg)
