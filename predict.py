@@ -18,6 +18,7 @@ train_end_year = 2018  # default value
 test_begin_year = 2019  # default value
 test_end_year = 2019  # default value
 target_variable = "PM2.5"
+model_output_name = 'model.pickle'
 
 
 def datetime_transform(date_str):
@@ -29,12 +30,23 @@ def datetime_transform(date_str):
 
 
 def main(cfg):
+    global data_root_folder
+    global train_begin_year
+    global train_end_year
+    global test_begin_year
+    global test_end_year
+    global target_variable
+    global target_variable
+    global model_output_folder
+    global model_output_name
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
     test_begin_year = cfg['test_begin_year']
     test_end_year = cfg['test_end_year']
     target_variable = cfg['variable']
+    model_output_folder = cfg['model_output_folder']
+    model_output_name = cfg['model_output_name']
 
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central"]
@@ -80,9 +92,10 @@ def main(cfg):
             ])
             num_of_cases = [0] * 13
             for hour in range(1, 14):
-                files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
-                if model_name in files:
-                    with open('/'.join([data_root_folder, area, station, target_variable, str(hour), model_name]), 'rb') as model:
+                files = os.listdir('/'.join([model_output_folder, target_variable, str(hour)]))
+                full_model_name = station + '_' + model_name
+                if full_model_name in files:
+                    with open('/'.join([data_root_folder, area, station, target_variable, str(hour), full_model_name]), 'rb') as model:
                         reg = pickle.load(model)
                         df_true = pd.read_csv('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.csv')
                         X_true, y_true = df_true.drop([target_variable + '_TARGET','TIME'], axis=1), df_true[target_variable + '_TARGET']
@@ -95,7 +108,7 @@ def main(cfg):
                         df['Error_T+' + str(hour)] = y_error.shift(-hour)
                         print('hour ' + str(hour) + ' finished.')
                 else:
-                    print("model name: " + model_name + ' not found for station: ' + station)
+                    print("model name: " + full_model_name + ' not found for station: ' + station)
                     continue
             if not all(n == num_of_cases[0] for n in num_of_cases):
                 print('Error!')

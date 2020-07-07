@@ -63,6 +63,7 @@ def main(cfg):
     global target_variable
     global output_file
     global verbose
+    global model_output_folder
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -70,6 +71,7 @@ def main(cfg):
     test_end_year = cfg['test_end_year']
     target_variable = cfg['variable']
     grid_search = cfg['grid_search']
+    model_output_folder = cfg['model_output_folder'] + target_variable
 
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
@@ -121,11 +123,12 @@ def station_multiprocess(station_input):
     global target_variable
     global output_file
     global verbose
+    global model_output_folder
 
     station, area, hour = station_input
 
-    if '.' in station: retu
-    if station not in os.listdir('/'.join([data_root_folder, area])): retu
+    if '.' in station: return
+    if station not in os.listdir('/'.join([data_root_folder, area])): return
 
     print('Variable: ' + target_variable + '. Start training on: ' + station)
 
@@ -184,7 +187,12 @@ def station_multiprocess(station_input):
     # # print(reg.best_params_)
     # # print(reg.best_score_)
 
-    with open('/'.join([data_root_folder, area, station, target_variable, str(hour), output_file]), 'wb') as f:
+    output_model_path = '/'.join([model_output_folder, target_variable, str(hour)])
+
+    if not os.path.exists(output_model_path):
+        os.makedirs(output_model_path)
+
+    with open(output_model_path + '/' + station + '_' + output_file, 'wb') as f:
         pickle.dump(reg, f)
         print('hour ' + str(hour) + ' saved.')
 

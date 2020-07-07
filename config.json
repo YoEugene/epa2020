@@ -11,11 +11,15 @@
     "report": "MAE",
     "data_root_folder": "./EPA_Station_rawdata",
     "grid_search": false,
-    "model_output_folder": "EPA_Station_PredictModel_",
-    "model_output_name": "model_nearby_6hour_20200707.pickle",
+    "mape_month_output_folder": "./EPA_Station_MAPE_month_",
+    "mae_month_output_folder": "./EPA_Station_MAE_month_",
+    "mape_hour_output_folder": "./EPA_Station_MAPE_hour_",
+    "mae_hour_output_folder": "./EPA_Station_MAE_hour_",
+    "model_output_folder": "./EPA_Station_PredictModel_",
+    "model_output_name": "model_nearby_24hour_20200708.pickle",
     "predict_output_name": "error_central_6hour_20200707.csv",
     "error_input_name": "Central_error_central_6hour_20200707.csv",
     "error_output_name": "month_error_central_6hour_20200707.csv",
     "verbose": 1,
-    "multiprcossing_number": 10
+    "multiprcossing_number": 12
 }

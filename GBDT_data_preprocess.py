@@ -150,8 +150,8 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
     output.close()
 
-    csv_to_parquet(output_csv_path)
-    os.remove(output_csv_path)
+    # csv_to_parquet(output_csv_path)
+    # os.remove(output_csv_path)
 
 
 if __name__ == "__main__":

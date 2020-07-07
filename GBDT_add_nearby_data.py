@@ -55,6 +55,26 @@ def main(cfg):
         pool = Pool(multiprcossing_number)
         pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
+    for area in areas:
+        print('################ Cleaning area csv files: ' + area + ' ################')
+
+        if not args.s and not cfg['stations']:
+            stations = os.listdir('/'.join([data_root_folder, area]))
+        elif args.s:
+            stations = args.s.split(',')
+        elif cfg['stations']:
+            stations = cfg['stations']
+
+        for station in stations:
+            if '.' in station: continue
+            if station not in os.listdir('/'.join([data_root_folder, area])): continue
+            for hour in range(1, 14):
+                files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
+                for f in files:
+                    if '.csv' in f:
+                        os.remove('/'.join([data_root_folder, area, station, target_variable, str(hour), f]))
+            print("Station cleaned: " + station)
+
 
 def station_multiprocess(station_input):
     global data_root_folder
@@ -64,7 +84,7 @@ def station_multiprocess(station_input):
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
 
-    print('Adding nearby station data into: ' + station)
+    print('Adding nearby station data into: ' + station + ", hour: " + str(hour))
 
     csv_path = '/'.join([data_root_folder, area])
     other_stations = []
@@ -85,11 +105,12 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     output = open(output_csv_path, "w+")
     wr = csv.writer(output)
 
-    target_nearby_station_data_path = '/'.join([csv_path, target_station, target_variable, hour, target_csv_name])
+    target_station_csv_path = '/'.join([csv_path, target_station, target_variable, hour, target_csv_name])
+    # target_station_parquet_path = target_station_csv_path.replace("csv", "parquet")
 
-    parquet_to_csv(target_nearby_station_data_path.replace('csv', 'parquet'))
+    # parquet_to_csv(target_station_parquet_path)
 
-    target_reader = csv.reader(open(target_nearby_station_data_path, newline=''))
+    target_reader = csv.reader(open(target_station_csv_path, newline=''))
     other_stations_readers = []
     for ost in other_stations:
         other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
@@ -112,7 +133,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     wr.writerow(header)
 
-    format = '%d.%m.%Y %H:%M:%S'
+    date_format = '%d.%m.%Y %H:%M:%S'
 
     date_continue = [True for i in range(len(other_stations_readers))]
     while row != None:
@@ -120,10 +141,10 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
             row = next(target_reader)
             date_check_str = row[0]
             try:
-                cur_datetime = datetime.strptime(date_check_str, format)
+                cur_datetime = datetime.strptime(date_check_str, date_format)
             except ValueError:
                 date_check_str = date_check_str.replace(' 24:', ' 23:')
-                cur_datetime = datetime.strptime(date_check_str, format)
+                cur_datetime = datetime.strptime(date_check_str, date_format)
                 cur_datetime += timedelta(hours=1)
             # print(date_check_str)
             data_point = row
@@ -134,19 +155,19 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
                     if date_continue[i] is True:
                         osr_row = next(osr)
                         try:
-                            osr_row_time = datetime.strptime(osr_row[0], format)
+                            osr_row_time = datetime.strptime(osr_row[0], date_format)
                         except ValueError:
                             date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
-                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time = datetime.strptime(date_check_tmp, date_format)
                             osr_row_time += timedelta(hours=1)
                     else:
                         osr_row = date_continue[i]
                         try:
-                            osr_row_time = datetime.strptime(osr_row[0], format)
+                            osr_row_time = datetime.strptime(osr_row[0], date_format)
                         except ValueError:
                             # print('err: ' + osr_row[0])
                             date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
-                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time = datetime.strptime(date_check_tmp, date_format)
                             osr_row_time += timedelta(hours=1)
                 except StopIteration as e:
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
@@ -166,11 +187,11 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
                     while cur_datetime > osr_row_time:
                         osr_row = next(osr)
                         try:
-                            osr_row_time = datetime.strptime(osr_row[0], format)
+                            osr_row_time = datetime.strptime(osr_row[0], date_format)
                         except ValueError:
                             # print('err: ' + osr_row[0])
                             date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
-                            osr_row_time = datetime.strptime(date_check_tmp, format)
+                            osr_row_time = datetime.strptime(date_check_tmp, date_format)
                             osr_row_time += timedelta(hours=1)
                     if cur_datetime == osr_row_time:
                         date_continue[i] = True
@@ -194,9 +215,9 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     print(target_station + ' ' + hour + ' done.')
     output.close()
 
-    csv_to_parquet(output_csv_name)
-    os.remove(output_csv_name)
-    os.remove(target_csv_name)
+    csv_to_parquet(output_csv_path)
+    # os.remove(output_csv_path)
+    # os.remove(target_station_csv_path)
 
 
 if __name__ == '__main__':
