@@ -1,7 +1,11 @@
 import csv
 import os
 import argparse
-from utils import read_config
+from utils import *
+
+# Multiprocessing
+from multiprocessing import Pool
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
@@ -50,14 +54,26 @@ def main(cfg):
             if '.' in station: continue
             if station not in os.listdir('/'.join([data_root_folder, area])): continue
             print('Converting station to GBDT format: ' + station)
-            for hour in range(1, 14):  # build data for prediction hour_1 ~ hour_13
-                lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
-                gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
-                lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2015_2018.csv', hour)
 
-                lstm_csv_path = '/'.join([data_root_folder, area, station, '2019.csv'])
-                gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
-                lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2019.csv', hour)
+            # Make the Pool of workers
+            pool = Pool(10)
+
+            pool.map(hour_multi_process, zip(range(1, 14), [area] * 13, [station] * 13))
+
+
+def hour_multi_process(hour_input):
+    global data_root_folder, target_variable
+
+    hour, area, station = hour_input
+
+    lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
+    gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
+    lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2015_2018.csv', hour)
+
+    lstm_csv_path = '/'.join([data_root_folder, area, station, '2019.csv'])
+    gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
+    lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2019.csv', hour)
+
 
 def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
     global target_variable
@@ -68,6 +84,8 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
     output = open('/'.join([gbdt_csv_path, gbdt_csv_name]), "w")
     wr = csv.writer(output)
     # wr.writerow(['PM25','SO2','O3','CO','NOx','PM10','RH','THC','WIND_DIREC','AMB_TEMP','NO2','NO','NMHC','WIND_SPEED','CH4','WS_HR','WD_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH'])
+
+    # parquet_to_csv(lstm_csv_path.replace('csv', 'parquet'))
 
     with open(lstm_csv_path, newline='') as f:
         reader = csv.reader(f)
@@ -125,6 +143,8 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
             except StopIteration:
                 row = None
                 # print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
+
+    # os.remove(lstm_csv_path)
 
 
 if __name__ == "__main__":

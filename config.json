@@ -11,6 +11,7 @@
     "report": "MAE",
     "data_root_folder": "./EPA_Station_rawdata",
     "grid_search": false,
+    "model_output_folder": "EPA_Station_PredictModel_",
     "model_output_name": "model_nearby_6hour_20200707.pickle",
     "predict_output_name": "error_central_6hour_20200707.csv",
     "error_input_name": "Central_error_central_6hour_20200707.csv",

@@ -24,16 +24,16 @@ def main(cfg):
     # move_csv_to_area.main(cfg)
 
     # Step 3
-    LSTM_data_preprocess.main(cfg)
+    # LSTM_data_preprocess.main(cfg)
 
     # # Step 4 - 1
-    GBDT_data_preprocess.main(cfg)
+    # GBDT_data_preprocess.main(cfg)
 
-    # # Step 4 - 2
+    # # # Step 4 - 2
     GBDT_add_nearby_data.main(cfg)
 
-    # Step 5
-    train.main(cfg)
+    # # Step 5
+    # train.main(cfg)
 
     # # Step 6
     # predict.main(cfg)

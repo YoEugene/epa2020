@@ -2,7 +2,12 @@ import csv
 import os
 import argparse
 from datetime import datetime, timedelta
-from utils import read_config
+from utils import *
+
+# Multiprocessing
+import itertools
+from multiprocessing import Pool
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
@@ -44,27 +49,38 @@ def main(cfg):
         elif cfg['stations']:
             stations = cfg['stations']
 
-        for station in stations:
-            if '.' in station: continue
-            if station not in os.listdir('/'.join([data_root_folder, area])): continue
-            print('Adding nearby station data into: ' + station)
+        # Make the Pool of workers
+        pool = Pool(10)
+        pool.map(multiprocess, itertools.product(stations, [area], range(1, 14)))
 
-            csv_path = '/'.join([data_root_folder, area])
-            other_stations = []
-            for station_tmp in os.listdir('/'.join([data_root_folder, area])):
-                if '.' in station_tmp: continue
-                if station_tmp != station: other_stations.append(station_tmp)
 
-            for hour in range(1, 14):
-                # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
-                gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
-                gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
+def multiprocess(station_input):
+    global data_root_folder
+
+    station, area, hour = station_input
+
+    if '.' in station: return
+    if station not in os.listdir('/'.join([data_root_folder, area])): return
+
+    print('Adding nearby station data into: ' + station)
+
+    csv_path = '/'.join([data_root_folder, area])
+    other_stations = []
+    for station_tmp in os.listdir('/'.join([data_root_folder, area])):
+        if '.' in station_tmp: continue
+        if station_tmp != station: other_stations.append(station_tmp)
+
+    # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
+    gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
+    gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
 
 
 def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name, output_csv_name):
     global target_variable
 
-    output = open('/'.join([csv_path, target_station, target_variable, hour, output_csv_name]), "w+")
+    output_csv_path = '/'.join([csv_path, target_station, target_variable, hour, output_csv_name])
+
+    output = open(output_csv_path, "w+")
     wr = csv.writer(output)
 
     target_reader = csv.reader(open('/'.join([csv_path, target_station, target_variable, hour, target_csv_name]), newline=''))
@@ -171,6 +187,9 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     print(target_station + ' ' + hour + ' done.')
     output.close()
+
+    csv_to_parquet(output_csv_path)
+    os.remove(output_csv_path)
 
 if __name__ == '__main__':
     cfg = read_config()

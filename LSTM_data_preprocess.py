@@ -3,7 +3,11 @@ import os
 from collections import defaultdict
 import csv
 import argparse
-from utils import read_config
+from utils import *
+
+# Multiprocessing
+from multiprocessing import Pool
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
@@ -50,17 +54,31 @@ def main(cfg):
         elif cfg['stations']:
             stations = cfg['stations']
 
-        for station in stations:
-            if '.' in station: continue
-            if station not in os.listdir('/'.join([data_root_folder, area])): continue
-            csv_files = os.listdir('/'.join([data_root_folder, area, station]))
-            print('Converting station to LSTM format: ' + station)
-            for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
-                for csv_file in csv_files:
-                    if str(int(year) - 1911) == csv_file[:3]:
-                        raw_csv_path = '/'.join([data_root_folder, area, station, csv_file])
-                        lstm_csv_path = '/'.join([data_root_folder, area, station, str(year) + '.csv'])
-                        raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station, cfg)
+        # Make the Pool of workers
+        pool = Pool(10)
+
+        pool.map(station_multi_process, zip(stations, [area] * len(stations)))
+
+
+def station_multi_process(station_input):
+    station, area = station_input
+    global data_root_folder
+    global train_begin_year
+    global train_end_year
+    global test_begin_year
+    global test_end_year
+
+    if '.' in station: return
+    if station not in os.listdir('/'.join([data_root_folder, area])): return
+    csv_files = os.listdir('/'.join([data_root_folder, area, station]))
+    print('Converting station to LSTM format: ' + station)
+    for year in list(range(train_begin_year, train_end_year+1)) + list(range(test_begin_year, test_end_year+1)):
+        for csv_file in csv_files:
+            if str(int(year) - 1911) == csv_file[:3]:
+                raw_csv_path = '/'.join([data_root_folder, area, station, csv_file])
+                lstm_csv_path = '/'.join([data_root_folder, area, station, str(year) + '.csv'])
+                raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station)
+
 
 
 def gen_day_empty(date_str, day_of_year, month):
@@ -163,6 +181,9 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station, cfg):
         output.close()
 
         # print('Convert ' + raw_csv + ' to ' + lstm_csv + ' done.')
+
+    # csv_to_parquet(lstm_csv)
+    # os.remove(lstm_csv)
     # except Exception as e:
     #     print(raw_csv)
     #     print(repr(e))
