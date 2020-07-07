@@ -55,7 +55,7 @@ def main(cfg):
         # Make the Pool of workers
         pool = Pool(multiprcossing_number)
 
-        pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, stations))
+        pool.map(hour_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 
 def hour_multiprocess(hour_input):
