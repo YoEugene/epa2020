@@ -34,6 +34,8 @@ def main(cfg):
     global target_variable
     target_variable = cfg['variable']
 
+    multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
+
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central"]
     elif args.areas:
@@ -56,7 +58,7 @@ def main(cfg):
             print('Converting station to GBDT format: ' + station)
 
             # Make the Pool of workers
-            pool = Pool(72)
+            pool = Pool(multiprcossing_number)
 
             pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, [station] * 13))
 

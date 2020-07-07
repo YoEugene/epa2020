@@ -26,8 +26,8 @@ def main(cfg):
     # # Step 3
     # LSTM_data_preprocess.main(cfg)
 
-    # Step 4 - 1
-    GBDT_data_preprocess.main(cfg)
+    # # Step 4 - 1
+    # GBDT_data_preprocess.main(cfg)
 
     # Step 4 - 2
     GBDT_add_nearby_data.main(cfg)

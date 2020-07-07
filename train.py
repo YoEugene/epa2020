@@ -71,6 +71,8 @@ def main(cfg):
     target_variable = cfg['variable']
     grid_search = cfg['grid_search']
 
+    multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
+
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central"]
     elif args.areas:
@@ -110,7 +112,7 @@ def main(cfg):
             stations = cfg['stations']
 
         # Make the Pool of workers
-        pool = Pool(72)
+        pool = Pool(multiprcossing_number)
         pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 

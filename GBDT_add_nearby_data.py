@@ -32,6 +32,8 @@ def main(cfg):
     global target_variable
     target_variable = cfg['variable']
 
+    multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
+
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central"]
     elif args.areas:
@@ -50,7 +52,7 @@ def main(cfg):
             stations = cfg['stations']
 
         # Make the Pool of workers
-        pool = Pool(72)
+        pool = Pool(multiprcossing_number)
         pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 
@@ -87,7 +89,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     parquet_to_csv(target_nearby_station_data_path.replace('csv', 'parquet'))
 
-    target_reader = csv.reader(open(target_nearby_station_data_path), newline='')
+    target_reader = csv.reader(open(target_nearby_station_data_path, newline=''))
     other_stations_readers = []
     for ost in other_stations:
         other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
