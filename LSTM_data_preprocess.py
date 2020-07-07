@@ -60,7 +60,7 @@ def main(cfg):
                     if str(int(year) - 1911) == csv_file[:3]:
                         raw_csv_path = '/'.join([data_root_folder, area, station, csv_file])
                         lstm_csv_path = '/'.join([data_root_folder, area, station, str(year) + '.csv'])
-                        raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station)
+                        raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station, cfg)
 
 
 def gen_day_empty(date_str, day_of_year, month):
@@ -68,7 +68,7 @@ def gen_day_empty(date_str, day_of_year, month):
     return {i: [date_str + ' ' + format(i, '02d') + ':00:00'] + [0 for xx in range(len(features)-1)] + [str((day_of_year) % 365), str(i), str(datetime(year, mon, day).weekday()), month] for i in range(1, 25)}
 
 
-def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
+def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station, cfg):
     # try:
     # TODO train test begin end year
     if year == '2019':
