@@ -6,7 +6,7 @@ import argparse
 from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
-parser.add_argument('-area', help='areas')
+parser.add_argument('-areas', help='areas')
 parser.add_argument('-verbose', help='verbose')
 parser.add_argument('-o', help='output')
 parser.add_argument('-target', help='target')
