@@ -52,21 +52,20 @@ def main(cfg):
         elif cfg['stations']:
             stations = cfg['stations']
 
-        for station in stations:
-            if '.' in station: continue
-            if station not in os.listdir('/'.join([data_root_folder, area])): continue
-            print('Converting station to GBDT format: ' + station)
+        # Make the Pool of workers
+        pool = Pool(multiprcossing_number)
 
-            # Make the Pool of workers
-            pool = Pool(multiprcossing_number)
-
-            pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, [station] * 13))
+        pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, stations))
 
 
 def hour_multiprocess(hour_input):
     global data_root_folder, target_variable
 
     hour, area, station = hour_input
+
+    if '.' in station: return
+    if station not in os.listdir('/'.join([data_root_folder, area])): return
+    print('Converting station to GBDT format: ' + station)
 
     lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
     gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
