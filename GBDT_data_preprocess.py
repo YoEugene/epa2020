@@ -62,7 +62,7 @@ def main(cfg):
 def hour_multiprocess(hour_input):
     global data_root_folder, target_variable
 
-    hour, area, station = hour_input
+    station, area, hour = hour_input
 
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
