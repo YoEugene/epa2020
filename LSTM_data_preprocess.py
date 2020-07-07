@@ -57,10 +57,10 @@ def main(cfg):
         # Make the Pool of workers
         pool = Pool(10)
 
-        pool.map(station_multi_process, zip(stations, [area] * len(stations)))
+        pool.map(station_multiprocess, zip(stations, [area] * len(stations)))
 
 
-def station_multi_process(station_input):
+def station_multiprocess(station_input):
     station, area = station_input
     global data_root_folder
     global train_begin_year

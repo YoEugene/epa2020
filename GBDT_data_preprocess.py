@@ -58,10 +58,10 @@ def main(cfg):
             # Make the Pool of workers
             pool = Pool(10)
 
-            pool.map(hour_multi_process, zip(range(1, 14), [area] * 13, [station] * 13))
+            pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, [station] * 13))
 
 
-def hour_multi_process(hour_input):
+def hour_multiprocess(hour_input):
     global data_root_folder, target_variable
 
     hour, area, station = hour_input

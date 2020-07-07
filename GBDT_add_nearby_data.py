@@ -51,10 +51,10 @@ def main(cfg):
 
         # Make the Pool of workers
         pool = Pool(10)
-        pool.map(multiprocess, itertools.product(stations, [area], range(1, 14)))
+        pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 
-def multiprocess(station_input):
+def station_multiprocess(station_input):
     global data_root_folder
 
     station, area, hour = station_input
