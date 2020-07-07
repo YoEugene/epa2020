@@ -55,7 +55,7 @@ def main(cfg):
             stations = cfg['stations']
 
         # Make the Pool of workers
-        pool = Pool(10)
+        pool = Pool(72)
 
         pool.map(station_multiprocess, zip(stations, [area] * len(stations)))
 

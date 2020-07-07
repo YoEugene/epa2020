@@ -56,7 +56,7 @@ def main(cfg):
             print('Converting station to GBDT format: ' + station)
 
             # Make the Pool of workers
-            pool = Pool(10)
+            pool = Pool(72)
 
             pool.map(hour_multiprocess, zip(range(1, 14), [area] * 13, [station] * 13))
 
@@ -85,7 +85,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
     wr = csv.writer(output)
     # wr.writerow(['PM25','SO2','O3','CO','NOx','PM10','RH','THC','WIND_DIREC','AMB_TEMP','NO2','NO','NMHC','WIND_SPEED','CH4','WS_HR','WD_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH'])
 
-    # parquet_to_csv(lstm_csv_path.replace('csv', 'parquet'))
+    parquet_to_csv(lstm_csv_path.replace('csv', 'parquet'))
 
     with open(lstm_csv_path, newline='') as f:
         reader = csv.reader(f)
@@ -144,7 +144,7 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                 row = None
                 # print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
 
-    # os.remove(lstm_csv_path)
+    os.remove(lstm_csv_path)
 
 
 if __name__ == "__main__":

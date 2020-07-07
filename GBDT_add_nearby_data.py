@@ -50,7 +50,7 @@ def main(cfg):
             stations = cfg['stations']
 
         # Make the Pool of workers
-        pool = Pool(10)
+        pool = Pool(72)
         pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 
@@ -83,7 +83,11 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     output = open(output_csv_path, "w+")
     wr = csv.writer(output)
 
-    target_reader = csv.reader(open('/'.join([csv_path, target_station, target_variable, hour, target_csv_name]), newline=''))
+    target_nearby_station_data_path = '/'.join([csv_path, target_station, target_variable, hour, target_csv_name]
+
+    parquet_to_csv(target_nearby_station_data_path.replace('csv', 'parquet'))
+
+    target_reader = csv.reader(open(target_nearby_station_data_path), newline=''))
     other_stations_readers = []
     for ost in other_stations:
         other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
@@ -190,6 +194,8 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     csv_to_parquet(output_csv_path)
     os.remove(output_csv_path)
+    os.remove(target_nearby_station_data_path)
+
 
 if __name__ == '__main__':
     cfg = read_config()

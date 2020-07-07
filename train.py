@@ -110,7 +110,7 @@ def main(cfg):
             stations = cfg['stations']
 
         # Make the Pool of workers
-        pool = Pool(10)
+        pool = Pool(72)
         pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 
@@ -158,7 +158,8 @@ def station_multiprocess(station_input):
         print(reg.best_score_)
     else:
         # Normal Train
-        reg = GradientBoostingRegressor(learning_rate=0.1, n_estimators=256, max_depth=10, verbose=verbose, max_features=0.2, random_state=0)
+        # reg = GradientBoostingRegressor(learning_rate=0.1, n_estimators=256, max_depth=10, verbose=verbose, max_features=0.2, random_state=42)
+        reg = GradientBoostingRegressor(random_state=42)
         reg.fit(X_train, y_train)
 
     # # Grid Search for Time series (Gap CV)
