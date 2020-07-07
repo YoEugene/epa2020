@@ -194,9 +194,9 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     print(target_station + ' ' + hour + ' done.')
     output.close()
 
-    csv_to_parquet(output_csv_path)
-    os.remove(output_csv_path)
-    os.remove(target_nearby_station_data_path)
+    csv_to_parquet(output_csv_name)
+    os.remove(output_csv_name)
+    os.remove(target_csv_name)
 
 
 if __name__ == '__main__':
