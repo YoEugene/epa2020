@@ -7,6 +7,7 @@
     "train_end_year": 2018,
     "test_begin_year": 2019,
     "test_end_year": 2019,
+    "missing_value_filling_n_hours_avg": 24,
     "report": "MAE",
     "data_root_folder": "./EPA_Station_rawdata",
     "grid_search": false,

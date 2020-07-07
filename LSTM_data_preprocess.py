@@ -7,6 +7,7 @@ from utils import read_config
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
+parser.add_argument('-n_hours', help='n_hours')
 args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']
@@ -90,7 +91,12 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
         cur_date = year + '/01/01'
 
         last_n_hours_rows = defaultdict(list)
-        n_hours = 6  # hours
+        if not args.n_hours and not cfg['missing_value_filling_n_hours_avg']:
+            n_hours = 24
+        elif args.n_hours:
+            n_hours = args.n_hours
+        elif cfg['missing_value_filling_n_hours_avg']:
+            n_hours = cfg['missing_value_filling_n_hours_avg']
 
         for row in rows:
             if '測項' in row: continue  # pass first header row
