@@ -36,10 +36,10 @@ def main(cfg):
     # train.main(cfg)
 
     # # Step 6
-    predict.main(cfg)
+    # predict.main(cfg)
 
     # # Step 7
-    # report.main(cfg)
+    report.main(cfg)
 
 
 if __name__ == '__main__':
