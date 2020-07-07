@@ -1,7 +1,7 @@
 {
-    "variable": "NO2",
+    "variable": "PM2.5",
     "model": "GBDT",
-    "areas": ["North"],
+    "areas": ["South"],
     "stations": [],
     "train_begin_year": 2015,
     "train_end_year": 2018,
@@ -9,5 +9,7 @@
     "test_end_year": 2019,
     "report": "MAE",
     "data_root_folder": "./EPA_Station_rawdata",
-    "grid_search": false
+    "grid_search": false,
+    "model_output_name": "model_nearby_6hour_20200707.pickle",
+    "verbose": 1
 }

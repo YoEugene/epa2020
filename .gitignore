@@ -1,2 +1,3 @@
 data/
 EPA_Station_rawdata/
+__pycache__/*
