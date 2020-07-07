@@ -1,7 +1,7 @@
 {
     "variable": "PM2.5",
     "model": "GBDT",
-    "areas": ["Central"],
+    "areas": ["Central", "South", "North"],
     "stations": [],
     "train_begin_year": 2015,
     "train_end_year": 2018,
@@ -21,5 +21,5 @@
     "error_input_name": "Central_error_central_6hour_20200707.csv",
     "error_output_name": "month_error_central_6hour_20200707.csv",
     "verbose": 1,
-    "multiprcossing_number": 12
+    "multiprcossing_number": 64
 }

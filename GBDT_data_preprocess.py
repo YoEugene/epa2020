@@ -4,6 +4,7 @@ import argparse
 from utils import *
 
 # Multiprocessing
+import itertools
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser()
