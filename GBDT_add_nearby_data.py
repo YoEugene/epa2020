@@ -87,7 +87,7 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
 
     parquet_to_csv(target_nearby_station_data_path.replace('csv', 'parquet'))
 
-    target_reader = csv.reader(open(target_nearby_station_data_path), newline=''))
+    target_reader = csv.reader(open(target_nearby_station_data_path), newline='')
     other_stations_readers = []
     for ost in other_stations:
         other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
