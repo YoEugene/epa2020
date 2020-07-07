@@ -17,14 +17,14 @@ args = parser.parse_args()
 
 
 def main(cfg):
-    # Step 1
-    airtw_xls_to_csv.main(cfg)
+    # # Step 1
+    # airtw_xls_to_csv.main(cfg)
 
-    # Step 2
-    move_csv_to_area.main(cfg)
+    # # Step 2
+    # move_csv_to_area.main(cfg)
 
-    # Step 3
-    LSTM_data_preprocess.main(cfg)
+    # # Step 3
+    # LSTM_data_preprocess.main(cfg)
 
     # Step 4 - 1
     GBDT_data_preprocess.main(cfg)
