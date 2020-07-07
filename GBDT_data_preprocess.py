@@ -81,9 +81,9 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
     if not os.path.exists(gbdt_csv_path):
         os.makedirs(gbdt_csv_path)
 
-    output_csv_path = '/'.join([gbdt_csv_path, gbdt_csv_name]
+    output_csv_path = '/'.join([gbdt_csv_path, gbdt_csv_name])
 
-    output = open(output_csv_path), "w")
+    output = open(output_csv_path, "w")
     wr = csv.writer(output)
     # wr.writerow(['PM25','SO2','O3','CO','NOx','PM10','RH','THC','WIND_DIREC','AMB_TEMP','NO2','NO','NMHC','WIND_SPEED','CH4','WS_HR','WD_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH'])
 
