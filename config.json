@@ -11,5 +11,6 @@
     "data_root_folder": "./EPA_Station_rawdata",
     "grid_search": false,
     "model_output_name": "model_nearby_6hour_20200707.pickle",
+    "predict_output_name": "error_central_6hour_20200707.csv",
     "verbose": 1
 }
