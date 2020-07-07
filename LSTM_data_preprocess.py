@@ -25,6 +25,7 @@ target_variable = "PM2.5"
 
 
 def main(cfg):
+    global cfg
     global data_root_folder
     global train_begin_year
     global train_end_year
@@ -86,7 +87,8 @@ def gen_day_empty(date_str, day_of_year, month):
     return {i: [date_str + ' ' + format(i, '02d') + ':00:00'] + [0 for xx in range(len(features)-1)] + [str((day_of_year) % 365), str(i), str(datetime(year, mon, day).weekday()), month] for i in range(1, 25)}
 
 
-def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station, cfg):
+def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
+    global cfg
     # try:
     # TODO train test begin end year
     if year == '2019':
