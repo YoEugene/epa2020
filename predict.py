@@ -84,7 +84,7 @@ def main(cfg):
                 if model_name in files:
                     with open('/'.join([data_root_folder, area, station, target_variable, str(hour), model_name]), 'rb') as model:
                         reg = pickle.load(model)
-                        df_true = pd.read_csv('/'.join([data_root_folder, area, station, str(hour)]) + '/gbdt_2019_nearby.csv')
+                        df_true = pd.read_csv('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.csv')
                         X_true, y_true = df_true.drop([target_variable + '_TARGET','TIME'], axis=1), df_true[target_variable + '_TARGET']
                         y_pred = pd.Series(reg.predict(X_true))
                         y_pred = y_pred.round(2)

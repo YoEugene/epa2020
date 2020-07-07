@@ -33,10 +33,10 @@ def main(cfg):
     # GBDT_add_nearby_data.main(cfg)
 
     # # Step 5
-    train.main(cfg)
+    # train.main(cfg)
 
     # # Step 6
-    # predict.main(cfg)
+    predict.main(cfg)
 
     # # Step 7
     # report.main(cfg)
