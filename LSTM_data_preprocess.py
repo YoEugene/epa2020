@@ -25,12 +25,13 @@ target_variable = "PM2.5"
 
 
 def main(cfg):
-    global cfg
+    global missing_value_filling_n_hours_avg
     global data_root_folder
     global train_begin_year
     global train_end_year
     global test_begin_year
     global test_end_year
+    missing_value_filling_n_hours_avg = cfg['missing_value_filling_n_hours_avg'] if cfg['missing_value_filling_n_hours_avg'] else 24
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -88,7 +89,7 @@ def gen_day_empty(date_str, day_of_year, month):
 
 
 def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
-    global cfg
+    global missing_value_filling_n_hours_avg
     # try:
     # TODO train test begin end year
     if year == '2019':
@@ -111,12 +112,12 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
         cur_date = year + '/01/01'
 
         last_n_hours_rows = defaultdict(list)
-        if not args.n_hours and not cfg['missing_value_filling_n_hours_avg']:
+        if not args.n_hours and not missing_value_filling_n_hours_avg:
             n_hours = 24
         elif args.n_hours:
             n_hours = args.n_hours
-        elif cfg['missing_value_filling_n_hours_avg']:
-            n_hours = cfg['missing_value_filling_n_hours_avg']
+        elif missing_value_filling_n_hours_avg:
+            n_hours = missing_value_filling_n_hours_avg
 
         for row in rows:
             if '測項' in row: continue  # pass first header row
