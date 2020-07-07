@@ -10,6 +10,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
+parser.add_argument('-i', help='input')
 parser.add_argument('-o', help='output')
 args = parser.parse_args()
 
@@ -37,6 +38,13 @@ def main(cfg):
     elif cfg['areas']:
         areas = cfg['areas']
 
+    if not args.i and not cfg['error_input_name']:
+        error_input_name = "error.csv"
+    elif args.i:
+        error_input_name = args.i
+    elif cfg['error_input_name']:
+        error_input_name = cfg['error_input_name']
+
     if not args.o and not cfg['error_output_name']:
         error_output_file = "error.csv"
     elif args.o:
@@ -45,7 +53,9 @@ def main(cfg):
         error_output_file = cfg['error_output_name']
 
     # Import CSV file into a dataframe
-    df = pd.read_csv('/'.join([data_root_folder, error_input_name]))
+    error_input_path = '/'.join([data_root_folder, error_input_name])
+    print(error_input_path)
+    df = pd.read_csv(error_input_path)
     df['time'] = pd.to_datetime(df['time'])
 
     df_o = pd.DataFrame(columns=['station','month','MAE_T1','MAE_T2','MAE_T3','MAE_T4','MAE_T5','MAE_T6','MAE_T7','MAE_T8','MAE_T9','MAE_T10','MAE_T11','MAE_T12','MAE_T13'])
