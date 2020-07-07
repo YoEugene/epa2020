@@ -105,9 +105,9 @@ def main(cfg):
             if station not in os.listdir('/'.join([data_root_folder, area])): continue
             print('Variable: ' + target_variable + '. Start training on: ' + station)
             # try:
-            MAE_list = [areas, station, target_variable, '2019 (一整年)']
+            MAE_list = [area, station, target_variable, '2019 (一整年)']
             for hour in range(1,14):
-                files = os.listdir('/'.join([data_root_folder, areas, station, target_variable, str(hour)]))
+                files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
 
                 # # Skip hour if model is saved
                 # if output_file in files:
@@ -116,10 +116,10 @@ def main(cfg):
 
                 hour = str(hour)
 
-                df = pd.read_csv('/'.join([data_root_folder, areas, station, target_variable, str(hour)]) + '/gbdt_2015_2018_nearby.csv')
+                df = pd.read_csv('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2015_2018_nearby.csv')
                 X_train, y_train = df.drop([target_variable + '_TARGET','TIME'], axis=1), df[target_variable + '_TARGET']
 
-                df_test = pd.read_csv('/'.join([data_root_folder, areas, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.csv')
+                df_test = pd.read_csv('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.csv')
                 X_test, y_test = df_test.drop([target_variable + '_TARGET','TIME'], axis=1), df_test[target_variable + '_TARGET']
 
                 if grid_search:
@@ -154,7 +154,7 @@ def main(cfg):
                 # # print(reg.best_params_)
                 # # print(reg.best_score_)
 
-                with open('/'.join([data_root_folder, areas, station, target_variable, str(hour), output_file]), 'wb') as f:
+                with open('/'.join([data_root_folder, area, station, target_variable, str(hour), output_file]), 'wb') as f:
                     pickle.dump(reg, f)
                     print('hour ' + str(hour) + ' saved.')
 
