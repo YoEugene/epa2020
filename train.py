@@ -187,7 +187,7 @@ def station_multiprocess(station_input):
     # # print(reg.best_params_)
     # # print(reg.best_score_)
 
-    output_model_path = '/'.join([model_output_folder, target_variable, str(hour)])
+    output_model_path = '/'.join([model_output_folder, str(hour)])
 
     if not os.path.exists(output_model_path):
         os.makedirs(output_model_path)

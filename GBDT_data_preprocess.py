@@ -26,6 +26,8 @@ train_end_year = 2018  # default value
 test_begin_year = 2019  # default value
 test_end_year = 2019  # default value
 target_variable = "PM2.5"
+global finished_counter
+finished_counter = 0
 
 
 def main(cfg):
@@ -60,13 +62,13 @@ def main(cfg):
 
 
 def hour_multiprocess(hour_input):
-    global data_root_folder, target_variable
+    global data_root_folder, target_variable, finished_counter
 
     station, area, hour = hour_input
 
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
-    print('Converting station to GBDT format: ' + station)
+    print('Converting station to GBDT format: ' + station + ' hour ' + str(hour) + ', finished: ' + str(finished_counter))
 
     lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
     gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
@@ -75,6 +77,8 @@ def hour_multiprocess(hour_input):
     lstm_csv_path = '/'.join([data_root_folder, area, station, '2019.csv'])
     gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])
     lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, 'gbdt_2019.csv', hour)
+
+    finished_counter += 1
 
 
 def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
