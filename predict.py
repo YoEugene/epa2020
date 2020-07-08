@@ -36,7 +36,6 @@ def main(cfg):
     global test_begin_year
     global test_end_year
     global target_variable
-    global target_variable
     global model_output_folder
     global model_output_name
     data_root_folder = cfg['data_root_folder']

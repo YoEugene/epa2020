@@ -1,5 +1,5 @@
 {
-    "variable": "PM2.5",
+    "variable": "O3",
     "model": "GBDT",
     "areas": ["Central", "South", "North"],
     "stations": [],

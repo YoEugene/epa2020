@@ -112,8 +112,9 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
             data_point = []
             try:
                 row = next(reader)
+                feature_index = features.index(target_variable)
                 data_point.append(row[0])
-                data_point.append(row[1])
+                data_point.append(row[feature_index])
                 for feature_ind in [1,2,4,5,6,7,8,9,10,13,14]:
                     for hour_back in range(1, 37):
                         if flag:

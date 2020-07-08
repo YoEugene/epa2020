@@ -23,6 +23,13 @@ target_variable = "PM2.5"
 error_input_name = ""
 
 def main(cfg):
+    global data_root_folder
+    global train_begin_year
+    global train_end_year
+    global test_begin_year
+    global test_end_year
+    global target_variable
+    global error_input_name
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
