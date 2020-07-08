@@ -1,5 +1,5 @@
 {
-    "variable": "O3",
+    "variable": "PM10",
     "model": "GBDT",
     "areas": ["Central", "South", "North"],
     "stations": [],
@@ -17,7 +17,7 @@
     "mae_hour_output_folder": "./EPA_Station_MAE_hour_",
     "model_output_folder": "./EPA_Station_PredictModel_",
     "model_output_name": "model_nearby_24hour_20200708.pickle",
-    "predict_output_name": "error_central_6hour_20200707.csv",
+    "predict_output_name": "error_central_24hour_20200708.csv",
     "error_input_name": "Central_error_central_6hour_20200707.csv",
     "error_output_name": "month_error_central_6hour_20200707.csv",
     "verbose": 1,

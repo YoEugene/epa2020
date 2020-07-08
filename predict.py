@@ -38,6 +38,7 @@ def main(cfg):
     global target_variable
     global model_output_folder
     global model_output_name
+    global mae_hour_output_folder
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -46,6 +47,7 @@ def main(cfg):
     target_variable = cfg['variable']
     model_output_folder = cfg['model_output_folder']
     model_output_name = cfg['model_output_name']
+    mae_hour_output_folder = cfg['mae_hour_output_folder']
 
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central"]
@@ -91,12 +93,15 @@ def main(cfg):
             ])
             num_of_cases = [0] * 13
             for hour in range(1, 14):
-                files = os.listdir('/'.join([model_output_folder, target_variable, str(hour)]))
+                # print('/'.join([model_output_folder + target_variable, str(hour)]))
+                files = os.listdir('/'.join([model_output_folder + target_variable, str(hour)]))
+                # print(files)
                 full_model_name = station + '_' + model_name
+                print(full_model_name)
                 if full_model_name in files:
-                    with open('/'.join([data_root_folder, area, station, target_variable, str(hour), full_model_name]), 'rb') as model:
+                    with open('/'.join([model_output_folder + target_variable, str(hour), full_model_name]), 'rb') as model:
                         reg = pickle.load(model)
-                        df_true = pd.read_csv('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.csv')
+                        df_true = pd.read_parquet('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.parquet')
                         X_true, y_true = df_true.drop([target_variable + '_TARGET','TIME'], axis=1), df_true[target_variable + '_TARGET']
                         y_pred = pd.Series(reg.predict(X_true))
                         y_pred = y_pred.round(2)
@@ -116,10 +121,10 @@ def main(cfg):
             df['time'] = df_true['TIME'].apply(datetime_transform)
             df['variable'] = target_variable
             if header_flag:
-                df.to_csv('/'.join([data_root_folder, area + '_' + output_file]))
+                df.to_csv('/'.join([mae_hour_output_folder + target_variable, area + '_' + output_file]))
                 header_flag = False
             else:
-                df.to_csv('/'.join([data_root_folder, area + '_' + output_file]), mode = 'a', header = False)
+                df.to_csv('/'.join([mae_hour_output_folder + target_variable, area + '_' + output_file]), mode = 'a', header = False)
 
 
 if __name__ == '__main__':
