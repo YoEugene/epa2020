@@ -2,4 +2,3 @@ data/
 EPA_Station_rawdata/
 __pycache__/
 *.pyc
-EPA_Station_PredictModel_PM2.5/
