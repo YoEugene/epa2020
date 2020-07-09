@@ -31,8 +31,6 @@
     "林園": {"longitude": 120.41175, "latitude": 22.4795},
     "板橋": {"longitude": 121.458667, "latitude": 25.012972},
     "松山": {"longitude": 121.578611, "latitude": 25.05},
-    "花蓮": {"longitude": 121.599769, "latitude": 23.971306},
-    "金門": {"longitude": 118.312256, "latitude": 24.432133},
     "前金": {"longitude": 120.288086, "latitude": 22.632567},
     "前鎮": {"longitude": 120.307564, "latitude": 22.605386},
     "南投": {"longitude": 120.685306, "latitude": 23.913},
@@ -42,8 +40,6 @@
     "苗栗": {"longitude": 120.8202, "latitude": 24.565269},
     "埔里": {"longitude": 120.967903, "latitude": 23.968842},
     "桃園": {"longitude": 121.304417, "latitude": 24.995667},
-    "馬公": {"longitude": 119.566158, "latitude": 23.569031},
-    "馬祖": {"longitude": 119.9525, "latitude": 26.153611},
     "基隆": {"longitude": 121.760056, "latitude": 25.129167},
     "崙背": {"longitude": 120.348742, "latitude": 23.757547},
     "淡水": {"longitude": 121.449239, "latitude": 25.1645},
@@ -70,9 +66,7 @@
     "頭份": {"longitude": 120.898572, "latitude": 24.696969},
     "龍潭": {"longitude": 121.21635, "latitude": 24.863869},
     "豐原": {"longitude": 120.741711, "latitude": 24.256586},
-    "關山": {"longitude": 121.161933, "latitude": 23.045083},
     "觀音": {"longitude": 121.082761, "latitude": 25.035503},
     "臺西": {"longitude": 120.202842, "latitude": 23.717533},
     "臺南": {"longitude": 120.202617, "latitude": 22.984581},
-    "臺東": {"longitude": 121.15045, "latitude": 22.755358}
 }

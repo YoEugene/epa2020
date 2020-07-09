@@ -115,13 +115,15 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
     target_reader = csv.reader(open(target_station_csv_path, newline=''))
     other_stations_readers = []
     for ost in other_stations:
+        os_reader = None
         for area in ['North', 'South', 'Central']:
             try:
                 os_reader = csv.reader(open('/'.join([data_root_folder, area, ost, target_variable, hour, target_csv_name]), newline=''))
                 break
             except:
                 pass
-        other_stations_readers.append(os_reader)
+        if os_reader is not None:
+            other_stations_readers.append(os_reader)
 
     row = next(target_reader)
     header = row
