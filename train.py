@@ -26,8 +26,6 @@ test_begin_year = 2019  # default value
 test_end_year = 2019  # default value
 target_variable = "PM2.5"
 grid_search = False
-global finished_counter
-finished_counter = 0
 
 # Import relevant items
 import pandas as pd
@@ -126,14 +124,13 @@ def station_multiprocess(station_input):
     global output_file
     global verbose
     global model_output_folder
-    global finished_counter
 
     station, area, hour = station_input
 
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
 
-    print('Variable: ' + target_variable + '. Start training on: ' + station + ' hour ' + str(hour) + ', finished: ' + str(finished_counter))
+    print('Variable: ' + target_variable + '. Start training on: ' + station + ' hour ' + str(hour)
 
     # try:
     #    files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
@@ -198,7 +195,6 @@ def station_multiprocess(station_input):
     with open(output_model_path + '/' + station + '_' + output_file, 'wb') as f:
         pickle.dump(reg, f)
         # print('Model: ' + station + ' hour ' + str(hour) + ' saved.')
-        finished_counter += 1
 
     MAE = str(sum(abs(reg.predict(X_test) - y_test))/len(X_test))
 

@@ -23,8 +23,6 @@ train_end_year = 2018  # default value
 test_begin_year = 2019  # default value
 test_end_year = 2019  # default value
 target_variable = "PM2.5"
-global finished_counter
-finished_counter = 0
 
 
 def main(cfg):
@@ -78,14 +76,14 @@ def main(cfg):
 
 
 def station_multiprocess(station_input):
-    global data_root_folder, finished_counter
+    global data_root_folder
 
     station, area, hour = station_input
 
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
 
-    print('Adding nearby station data into model: ' + station + " hour " + str(hour) + ', finished: ' + str(finished_counter))
+    print('Adding nearby station data into model: ' + station + " hour " + str(hour)
 
     other_stations = get_nearby_stations(station, 50)
 
@@ -94,8 +92,6 @@ def station_multiprocess(station_input):
     # gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), args.target, args.o)
     gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
     gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
-
-    finished_counter += 1
 
 
 def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, target_csv_name, output_csv_name):
