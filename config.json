@@ -17,7 +17,7 @@
     "mae_hour_output_folder": "./EPA_Station_MAE_hour_",
     "model_output_folder": "./EPA_Station_PredictModel_",
     "model_output_name": "model_nearby_24hour_20200709.pickle",
-    "predict_output_name": "error_central_24hour_20200709.csv",
+    "predict_output_name": "error_nearby_v2_24hour_20200709.csv",
     "error_input_name": "Central_error_nearby_24hour_20200709.csv",
     "error_output_name": "month_error_nearby_24hour_20200709.csv",
     "verbose": 1,
