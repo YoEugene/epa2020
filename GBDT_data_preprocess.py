@@ -66,7 +66,7 @@ def hour_multiprocess(hour_input):
 
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
-    print('Converting station to GBDT format: ' + station + ' hour ' + str(hour)
+    print('Converting station to GBDT format: ' + station + ' hour ' + str(hour))
 
     lstm_csv_path = '/'.join([data_root_folder, area, station, '2015_2018.csv'])
     gbdt_csv_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)])

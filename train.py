@@ -130,7 +130,7 @@ def station_multiprocess(station_input):
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
 
-    print('Variable: ' + target_variable + '. Start training on: ' + station + ' hour ' + str(hour)
+    print('Variable: ' + target_variable + '. Start training on: ' + station + ' hour ' + str(hour))
 
     # try:
     #    files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
