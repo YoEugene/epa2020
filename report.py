@@ -60,13 +60,14 @@ def main(cfg):
         error_output_file = cfg['error_output_name']
 
 
-    df_o = pd.DataFrame(columns=['station','month','MAPE_T1','MAPE_T2','MAPE_T3','MAPE_T4','MAPE_T5','MAPE_T6','MAPE_T7','MAPE_T8','MAPE_T9','MAPE_T10','MAPE_T11','MAPE_T12','MAPE_T13'])
+    df_o = pd.DataFrame(columns=['station','month','SMAPE_T1','SMAPE_T2','SMAPE_T3','SMAPE_T4','SMAPE_T5','SMAPE_T6','SMAPE_T7','SMAPE_T8','SMAPE_T9','SMAPE_T10','SMAPE_T11','SMAPE_T12','SMAPE_T13'])
+    # df_o = pd.DataFrame(columns=['station','month','MAPE_T1','MAPE_T2','MAPE_T3','MAPE_T4','MAPE_T5','MAPE_T6','MAPE_T7','MAPE_T8','MAPE_T9','MAPE_T10','MAPE_T11','MAPE_T12','MAPE_T13'])
     # df_o = pd.DataFrame(columns=['station','month','MAE_T1','MAE_T2','MAE_T3','MAE_T4','MAE_T5','MAE_T6','MAE_T7','MAE_T8','MAE_T9','MAE_T10','MAE_T11','MAE_T12','MAE_T13'])
 
     for area in areas:
         print('################ Processing area: ' + area + ' ################')
         # Import CSV file into a dataframe
-        error_input_path = './EPA_Station_MAE_hour_PM2.5/' + area + '_error_sheet_wo_nearby_all.csv'
+        error_input_path = './EPA_Station_MAE_hour_PM2.5/' + area + '_error_nearby_v2_24hour_20200709.csv'
         # error_input_path = '/'.join([data_root_folder, error_input_name])
         print(error_input_path)
         df = pd.read_csv(error_input_path)
@@ -95,15 +96,15 @@ def main(cfg):
                 # print(b)
                 # print(a.subtract(b))
                 # df_by_station_mon_error = list(abs(df_by_station_mon.drop(['Unnamed: 0','station','time','variable'], axis=1)).mean().round(3)[:13])  # MAE
-                df_by_station_mon_error = list(abs(predict_values.subtract(true_values)).divide(true_values).mean().round(5))   # MAPE
-                # df_by_station_mon_error = list(abs(predict_values.subtract(true_values)).divide(predict_values.add(true_values).divide(2)).mean().round(5))  # SMAPE
+                # df_by_station_mon_error = list(abs(predict_values.subtract(true_values)).divide(true_values).mean().round(5))   # MAPE
+                df_by_station_mon_error = list(abs(predict_values.subtract(true_values)).divide(predict_values.add(true_values).divide(2)).mean().round(5))  # SMAPE
                 # print(df_by_station_mon_error)
                 df_length = len(df_o)
                 df_o.loc[df_length] = [station, str(mon)] + df_by_station_mon_error
                 # df_o = df_o.append(df_by_station_mon_error, ignore_index=True)
                 # print('month ' + str(mon) + ' finished.')
 
-    df_o.to_csv('./EPA_Station_MAPE_month_PM2.5/EPA_Station_GBDT_MAPE_month_PM2.5.csv')
+    df_o.to_csv('./EPA_Station_MAPE_month_PM2.5/Central_mon_error_nearby_v2_24hour_20200709.csv')
     # df_o.to_csv('/'.join([data_root_folder, area + '_' + error_output_file]))
 
 

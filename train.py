@@ -163,8 +163,8 @@ def station_multiprocess(station_input):
         print(reg.best_score_)
     else:
         # Normal Train
-        # reg = GradientBoostingRegressor(learning_rate=0.1, n_estimators=256, max_depth=10, verbose=verbose, max_features=0.2, random_state=42)
-        reg = GradientBoostingRegressor(random_state=42)
+        reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=6, verbose=verbose, max_features=0.5, random_state=42)
+        # reg = GradientBoostingRegressor(random_state=42)
         reg.fit(X_train, y_train)
 
     # # Grid Search for Time series (Gap CV)
