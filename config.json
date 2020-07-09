@@ -1,7 +1,7 @@
 {
     "variable": "PM2.5",
     "model": "GBDT",
-    "areas": ["North", "South", "Central"],
+    "areas": ["Central"],
     "stations": [],
     "train_begin_year": 2015,
     "train_end_year": 2018,
