@@ -83,7 +83,7 @@ def station_multiprocess(station_input):
     if '.' in station: return
     if station not in os.listdir('/'.join([data_root_folder, area])): return
 
-    print('Adding nearby station data into model: ' + station + " hour " + str(hour)
+    print('Adding nearby station data into model: ' + station + " hour " + str(hour))
 
     other_stations = get_nearby_stations(station, 60)
 
