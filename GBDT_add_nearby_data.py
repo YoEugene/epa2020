@@ -87,7 +87,7 @@ def station_multiprocess(station_input):
 
     other_stations = get_nearby_stations(station, 50)
 
-    print('with nearby stations: ' + str(other_stations))
+    # print('with nearby stations: ' + str(other_stations))
 
     # gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), args.target, args.o)
     gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
