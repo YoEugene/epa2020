@@ -85,7 +85,7 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour))
 
-    other_stations = get_nearby_stations(station, 60)
+    other_stations = get_nearby_stations(station, 50)
 
     print('with nearby stations: ' + str(other_stations))
 
@@ -145,7 +145,7 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                             variable + '_NEARBY' + str(i+1) + '_AVG24',
                         ])
 
-    print(len(header))
+    # print(len(header))
 
     wr.writerow(header)
 
@@ -243,7 +243,7 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                     date_continue[i] = osr_row[:]
                     data_point.extend([-1]*(len(related_variables)*9))
                     # print('here')
-            print(len(data_point))
+            # print(len(data_point))
 
             wr.writerow(data_point)
         except StopIteration as e:
