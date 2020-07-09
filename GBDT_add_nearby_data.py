@@ -87,28 +87,27 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour) + ', finished: ' + str(finished_counter))
 
-    csv_path = '/'.join([data_root_folder, area])
-    other_stations = []
-    for station_tmp in os.listdir('/'.join([data_root_folder, area])):
-        if '.' in station_tmp: continue
-        if station_tmp != station: other_stations.append(station_tmp)
+    other_stations = get_nearby_stations(station, 50)
 
-    # gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), args.target, args.o)
-    gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
-    gbdt_add_nearby_stations_data(csv_path, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
+    print('with nearby stations: ' + str(other_stations))
+
+    # gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), args.target, args.o)
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
 
     finished_counter += 1
 
 
-def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour, target_csv_name, output_csv_name):
+def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, target_csv_name, output_csv_name):
+    global data_root_folder
     global target_variable
 
-    output_csv_path = '/'.join([csv_path, target_station, target_variable, hour, output_csv_name])
+    output_csv_path = '/'.join([data_root_folder, area, target_station, target_variable, hour, output_csv_name])
 
     output = open(output_csv_path, "w+")
     wr = csv.writer(output)
 
-    target_station_csv_path = '/'.join([csv_path, target_station, target_variable, hour, target_csv_name])
+    target_station_csv_path = '/'.join([data_root_folder, area, target_station, target_variable, hour, target_csv_name])
     # target_station_parquet_path = target_station_csv_path.replace("csv", "parquet")
 
     # parquet_to_csv(target_station_parquet_path)
@@ -116,7 +115,13 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
     target_reader = csv.reader(open(target_station_csv_path, newline=''))
     other_stations_readers = []
     for ost in other_stations:
-        other_stations_readers.append(csv.reader(open('/'.join([csv_path, ost, target_variable, hour, target_csv_name]), newline='')))
+        for area in ['North', 'South', 'Central']:
+            try:
+                os_reader = csv.reader(open('/'.join([data_root_folder, area, ost, target_variable, hour, target_csv_name]), newline=''))
+                break
+            except:
+                pass
+        other_stations_readers.append(os_reader)
 
     row = next(target_reader)
     header = row
@@ -124,13 +129,23 @@ def gbdt_add_nearby_stations_data(csv_path, target_station, other_stations, hour
         osr_row = next(osr)
 
     for i in range(len(other_stations_readers)):
-        header.extend([
-                        target_variable + '_NEARBY' + str(i+1) + '_T1', 
-                        target_variable + '_NEARBY' + str(i+1) + '_AVG3', 
-                        target_variable + '_NEARBY' + str(i+1) + '_AVG6', 
-                        target_variable + '_NEARBY' + str(i+1) + '_AVG12', 
-                        target_variable + '_NEARBY' + str(i+1) + '_AVG24',
-                    ])
+        related_variables = ['PM2.5', 'PM10', 'NO2', 'O3']
+        if target_variable == 'O3':
+            related_variables.extend(['CO', 'NMHC'])
+        elif target_variable == 'NO2':
+            related_variables.extend(['NO', 'NOx'])
+        for variable in related_variables:
+            header.extend([
+                            variable + '_NEARBY' + str(i+1) + '_T1', 
+                            variable + '_NEARBY' + str(i+1) + '_T3', 
+                            variable + '_NEARBY' + str(i+1) + '_T6', 
+                            variable + '_NEARBY' + str(i+1) + '_T12', 
+                            variable + '_NEARBY' + str(i+1) + '_T24', 
+                            variable + '_NEARBY' + str(i+1) + '_AVG3', 
+                            variable + '_NEARBY' + str(i+1) + '_AVG6', 
+                            variable + '_NEARBY' + str(i+1) + '_AVG12', 
+                            variable + '_NEARBY' + str(i+1) + '_AVG24',
+                        ])
 
     # print(len(header))
 

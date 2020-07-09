@@ -27,13 +27,13 @@ def main(cfg):
     # LSTM_data_preprocess.main(cfg)
 
     # Step 4 - 1
-    GBDT_data_preprocess.main(cfg)
+    # GBDT_data_preprocess.main(cfg)
 
     # Step 4 - 2
     GBDT_add_nearby_data.main(cfg)
 
     # Step 5
-    train.main(cfg)
+    # train.main(cfg)
 
     # # Step 6
     # predict.main(cfg)
