@@ -85,7 +85,7 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour))
 
-    other_stations = get_nearby_stations(station, 50)
+    other_stations = get_nearby_stations(station, 100)
 
     # print('with nearby stations: ' + str(other_stations))
 
