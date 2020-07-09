@@ -85,7 +85,7 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour)
 
-    other_stations = get_nearby_stations(station, 50)
+    other_stations = get_nearby_stations(station, 60)
 
     print('with nearby stations: ' + str(other_stations))
 
@@ -145,7 +145,7 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                             variable + '_NEARBY' + str(i+1) + '_AVG24',
                         ])
 
-    # print(len(header))
+    print(len(header))
 
     wr.writerow(header)
 
@@ -197,8 +197,20 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
 
                 if cur_datetime == osr_row_time:
                     date_continue[i] = True
-                    osr_five = osr_row[2:3] + osr_row[482:486]
-                    data_point.extend(osr_five)
+                    osr_extended_data = osr_row[2:3] + osr_row[4:5] + osr_row[7:8] + osr_row[13:14] + osr_row[25:26] + osr_row[482:486] + \
+                                        osr_row[1+36*8+1:1+36*8+2] + osr_row[1+36*8+3:1+36*8+4] + osr_row[1+36*8+6:1+36*8+7] + osr_row[1+36*8+12:1+36*8+13] + osr_row[1+36*8+24:1+36*8+25] + osr_row[481+4*8+1:481+4*8+5] + \
+                                        osr_row[1+36*6+1:1+36*6+2] + osr_row[1+36*6+3:1+36*6+4] + osr_row[1+36*6+6:1+36*6+7] + osr_row[1+36*6+12:1+36*6+13] + osr_row[1+36*6+24:1+36*6+25] + osr_row[481+4*6+1:481+4*6+5] + \
+                                        osr_row[1+36*1+1:1+36*1+2] + osr_row[1+36*1+3:1+36*1+4] + osr_row[1+36*1+6:1+36*1+7] + osr_row[1+36*1+12:1+36*1+13] + osr_row[1+36*1+24:1+36*1+25] + osr_row[481+4*1+1:481+4*1+5]
+                    if 'CO' in related_variables:
+                        osr_extended_data += osr_row[1+36*3+1:1+36*3+2] + osr_row[1+36*3+3:1+36*3+4] + osr_row[1+36*3+6:1+36*3+7] + osr_row[1+36*3+12:1+36*3+13] + osr_row[1+36*3+24:1+36*3+25] + osr_row[481+4*3+1:481+4*3+5]
+                    if 'NMHC' in related_variables:
+                        osr_extended_data += osr_row[1+36*4+1:1+36*4+2] + osr_row[1+36*4+3:1+36*4+4] + osr_row[1+36*4+6:1+36*4+7] + osr_row[1+36*4+12:1+36*4+13] + osr_row[1+36*4+24:1+36*4+25] + osr_row[481+4*4+1:481+4*4+5]
+                    if 'NO' in related_variables:
+                        osr_extended_data += osr_row[1+36*5+1:1+36*5+2] + osr_row[1+36*5+3:1+36*5+4] + osr_row[1+36*5+6:1+36*5+7] + osr_row[1+36*5+12:1+36*5+13] + osr_row[1+36*5+24:1+36*5+25] + osr_row[481+4*5+1:481+4*5+5]
+                    if 'NOx' in related_variables:
+                        osr_extended_data += osr_row[1+36*7+1:1+36*7+2] + osr_row[1+36*7+3:1+36*7+4] + osr_row[1+36*7+6:1+36*7+7] + osr_row[1+36*7+12:1+36*7+13] + osr_row[1+36*7+24:1+36*7+25] + osr_row[481+4*7+1:481+4*7+5]
+
+                    data_point.extend(osr_extended_data)
                 elif cur_datetime > osr_row_time:
                     while cur_datetime > osr_row_time:
                         osr_row = next(osr)
@@ -211,16 +223,27 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                             osr_row_time += timedelta(hours=1)
                     if cur_datetime == osr_row_time:
                         date_continue[i] = True
-                        osr_five = osr_row[2:3] + osr_row[482:486]
-                        data_point.extend(osr_five)
+                        osr_extended_data = osr_row[2:3] + osr_row[4:5] + osr_row[7:8] + osr_row[13:14] + osr_row[25:26] + osr_row[482:486] + \
+                                            osr_row[1+36*8+1:1+36*8+2] + osr_row[1+36*8+3:1+36*8+4] + osr_row[1+36*8+6:1+36*8+7] + osr_row[1+36*8+12:1+36*8+13] + osr_row[1+36*8+24:1+36*8+25] + osr_row[481+4*8+1:481+4*8+5] + \
+                                            osr_row[1+36*6+1:1+36*6+2] + osr_row[1+36*6+3:1+36*6+4] + osr_row[1+36*6+6:1+36*6+7] + osr_row[1+36*6+12:1+36*6+13] + osr_row[1+36*6+24:1+36*6+25] + osr_row[481+4*6+1:481+4*6+5] + \
+                                            osr_row[1+36*1+1:1+36*1+2] + osr_row[1+36*1+3:1+36*1+4] + osr_row[1+36*1+6:1+36*1+7] + osr_row[1+36*1+12:1+36*1+13] + osr_row[1+36*1+24:1+36*1+25] + osr_row[481+4*1+1:481+4*1+5]
+                        if 'CO' in related_variables:
+                            osr_extended_data += osr_row[1+36*3+1:1+36*3+2] + osr_row[1+36*3+3:1+36*3+4] + osr_row[1+36*3+6:1+36*3+7] + osr_row[1+36*3+12:1+36*3+13] + osr_row[1+36*3+24:1+36*3+25] + osr_row[481+4*3+1:481+4*3+5]
+                        if 'NMHC' in related_variables:
+                            osr_extended_data += osr_row[1+36*4+1:1+36*4+2] + osr_row[1+36*4+3:1+36*4+4] + osr_row[1+36*4+6:1+36*4+7] + osr_row[1+36*4+12:1+36*4+13] + osr_row[1+36*4+24:1+36*4+25] + osr_row[481+4*4+1:481+4*4+5]
+                        if 'NO' in related_variables:
+                            osr_extended_data += osr_row[1+36*5+1:1+36*5+2] + osr_row[1+36*5+3:1+36*5+4] + osr_row[1+36*5+6:1+36*5+7] + osr_row[1+36*5+12:1+36*5+13] + osr_row[1+36*5+24:1+36*5+25] + osr_row[481+4*5+1:481+4*5+5]
+                        if 'NOx' in related_variables:
+                            osr_extended_data += osr_row[1+36*7+1:1+36*7+2] + osr_row[1+36*7+3:1+36*7+4] + osr_row[1+36*7+6:1+36*7+7] + osr_row[1+36*7+12:1+36*7+13] + osr_row[1+36*7+24:1+36*7+25] + osr_row[481+4*7+1:481+4*7+5]
+                        data_point.extend(osr_extended_data)
                     elif cur_datetime < osr_row_time:
                         date_continue[i] = osr_row[:]
-                        data_point.extend([-1,-1,-1,-1,-1])
+                        data_point.extend([-1]*(len(related_variables)*9))
                 elif cur_datetime < osr_row_time:
                     date_continue[i] = osr_row[:]
-                    data_point.extend([-1,-1,-1,-1,-1])
+                    data_point.extend([-1]*(len(related_variables)*9))
                     # print('here')
-            # print(len(data_point))
+            print(len(data_point))
 
             wr.writerow(data_point)
         except StopIteration as e:
