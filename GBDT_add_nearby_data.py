@@ -35,7 +35,7 @@ def main(cfg):
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
     if not args.areas and not cfg['areas']:
-        areas = ["North", "South", "Central"]
+        areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
         areas = args.areas.split(',')
     elif cfg['areas']:
@@ -70,7 +70,7 @@ def main(cfg):
             for hour in range(1, 14):
                 files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
                 for f in files:
-                    if '.csv' in f:
+                    if '.csv' in f and 'nearby' in f:
                         os.remove('/'.join([data_root_folder, area, station, target_variable, str(hour), f]))
             print("Station cleaned: " + station)
 
@@ -85,13 +85,15 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour))
 
-    other_stations = get_nearby_stations(station, 100)
+    other_stations = get_nearby_stations(station, cfg['nearby_km_range'])
+    other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
+    other_stations = sorted(list(set(other_stations)))
 
     # print('with nearby stations: ' + str(other_stations))
 
     # gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), args.target, args.o)
-    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby.csv')
-    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby.csv')
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
 
 
 def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, target_csv_name, output_csv_name):
@@ -112,7 +114,7 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
     other_stations_readers = []
     for ost in other_stations:
         os_reader = None
-        for area in ['North', 'South', 'Central']:
+        for area in ["North", "South", "Central", "East", "Other"]:
             try:
                 os_reader = csv.reader(open('/'.join([data_root_folder, area, ost, target_variable, hour, target_csv_name]), newline=''))
                 break

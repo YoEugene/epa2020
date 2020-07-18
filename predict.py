@@ -3,7 +3,7 @@ import pickle
 import argparse
 import pandas as pd
 import datetime as dt
-from utils import read_config
+from utils import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', help='stations')
 parser.add_argument('-areas', help='areas')
@@ -50,7 +50,7 @@ def main(cfg):
     mae_hour_output_folder = cfg['mae_hour_output_folder']
 
     if not args.areas and not cfg['areas']:
-        areas = ["North", "South", "Central"]
+        areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
         areas = args.areas.split(',')
     elif cfg['areas']:
@@ -95,7 +95,7 @@ def main(cfg):
             for hour in range(1, 14):
                 # print('/'.join([model_output_folder + target_variable, str(hour)]))
                 files = os.listdir('/'.join([model_output_folder + target_variable, str(hour)]))
-                # print(files)
+                print(files)
                 full_model_name = station + '_' + model_name
                 print(full_model_name)
                 if full_model_name in files:

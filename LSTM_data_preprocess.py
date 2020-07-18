@@ -43,7 +43,7 @@ def main(cfg):
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
     if not args.areas and not cfg['areas']:
-        areas = ["North", "South", "Central"]
+        areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
         areas = args.areas.split(',')
     elif cfg['areas']:
@@ -82,7 +82,6 @@ def station_multiprocess(station_input):
                 raw_csv_path = '/'.join([data_root_folder, area, station, csv_file])
                 lstm_csv_path = '/'.join([data_root_folder, area, station, str(year) + '.csv'])
                 raw_csv_to_lstm_csv(raw_csv_path, lstm_csv_path, str(year), area, station)
-
 
 
 def gen_day_empty(date_str, day_of_year, month):
@@ -143,7 +142,6 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
             try:
                 feature_ind = features.index(row[2])
             except ValueError:
-                # print('feature ' + row[2] + ' not found.')
                 pass
             else:
                 if len(last_n_hours_rows[feature_ind]) < n_hours + 24:
@@ -162,8 +160,6 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
                         except:
                             extend_list.append(round(sum(last_n_hours_rows[feature_ind])/len(last_n_hours_rows[feature_ind]), 3))
                     last_n_hours_rows[feature_ind] = last_n_hours_rows[feature_ind][24:] + extend_list
-
-                # print(len(last_n_hours_rows[feature_ind]))
 
                 for hour in range(1, 25):
                     value = row[2+hour]
@@ -184,15 +180,6 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
             wr.writerow(d[hr])
 
         output.close()
-
-        # print('Convert ' + raw_csv + ' to ' + lstm_csv + ' done.')
-
-    # csv_to_parquet(lstm_csv)
-    # os.remove(lstm_csv)
-    # except Exception as e:
-    #     print(raw_csv)
-    #     print(repr(e))
-    #     return
 
 
 if __name__ == '__main__':

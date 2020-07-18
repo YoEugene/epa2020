@@ -4,6 +4,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from geopy import distance
+import aqi
 # from math import sin, cos, sqrt, atan2, radians
 
 def read_config():

@@ -14,7 +14,7 @@ def main(cfg):
         year_folder = str(year) + '_raw'
         print('============= Start on year: ' + year_folder + ' =============')
         for area_folder in os.listdir('/'.join([data_folder_prefix, year_folder])):
-            if '空品區' in area_folder:
+            if '空品區' in area_folder or '監測站' in area_folder:
                 print('################ Processing area: ' + area_folder + ' ################')
                 for xls_file in os.listdir('/'.join([data_folder_prefix, year_folder, area_folder])):
                     if '.xls' == xls_file[-4:]:  # if filename end up with .xls

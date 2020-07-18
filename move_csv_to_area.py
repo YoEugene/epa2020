@@ -10,6 +10,8 @@ area_relations = {
     '中部': 'Central',
     '雲嘉南': 'South',
     '高屏': 'South',
+    '離島': 'Other',
+    '花東': 'East',
 }
 
 
@@ -24,7 +26,7 @@ def main(cfg):
         year_folder = str(year) + '_raw'
         print('============= Start on year: ' + year_folder + ' =============')
         for area_folder in os.listdir('/'.join([data_folder_prefix, year_folder])):
-            if '空品區' in area_folder:
+            if '空品區' in area_folder or '監測站' in area_folder:
                 print('################ Processing area: ' + area_folder + ' ################')
                 for area in area_relations.keys():
                     if area in area_folder:
@@ -32,8 +34,6 @@ def main(cfg):
                         for csv_file in os.listdir('/'.join([data_folder_prefix, year_folder, area_folder])):
                             if '.csv' == csv_file[-4:]:  # if filename end up with .csv
                                 station_name = csv_file[csv_file.index('年') + 1: csv_file.index('站') + 1]
-                                # 富貴角站 needs to be dealt with individual config due to its data start year is 2017
-                                if "富貴角" in station_name: continue
                                 file_path = '/'.join([data_folder_prefix, year_folder, area_folder, csv_file])
                                 target_path = '/'.join([data_folder_prefix, position_path, station_name])
                                 copy_file_to_path(file_path, target_path)

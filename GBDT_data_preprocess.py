@@ -38,7 +38,7 @@ def main(cfg):
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
     if not args.areas and not cfg['areas']:
-        areas = ["North", "South", "Central"]
+        areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
         areas = args.areas.split(',')
     elif cfg['areas']:
@@ -55,7 +55,6 @@ def main(cfg):
 
         # Make the Pool of workers
         pool = Pool(multiprcossing_number)
-
         pool.map(hour_multiprocess, itertools.product(stations, [area], range(1, 14)))
 
 

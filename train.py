@@ -64,6 +64,7 @@ def main(cfg):
     global output_file
     global verbose
     global model_output_folder
+    global grid_search
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -76,7 +77,7 @@ def main(cfg):
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
     if not args.areas and not cfg['areas']:
-        areas = ["North", "South", "Central"]
+        areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
         areas = args.areas.split(',')
     elif cfg['areas']:
@@ -113,9 +114,14 @@ def main(cfg):
         elif cfg['stations']:
             stations = cfg['stations']
 
-        # Make the Pool of workers
-        pool = Pool(multiprcossing_number)
-        pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
+        if not grid_search:
+            # Make the Pool of workers
+            pool = Pool(multiprcossing_number)
+            pool.map(station_multiprocess, itertools.product(stations, [area], range(1, 14)))
+        else:
+            for station in stations:
+                for hour in range(1, 14):
+                    station_multiprocess((station, area, hour))
 
 
 def station_multiprocess(station_input):
@@ -132,76 +138,45 @@ def station_multiprocess(station_input):
 
     print('Variable: ' + target_variable + '. Start training on: ' + station + ' hour ' + str(hour))
 
-    # try:
-    #    files = os.listdir('/'.join([data_root_folder, area, station, target_variable, str(hour)]))
-
-    #     # Skip hour if model is saved
-    #     if output_file in files:
-    #         print('Skip ' + str(hour))
-    #         continue
-
     hour = str(hour)
 
-    train_data_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2015_2018_nearby.parquet'
-    # parquet_to_csv(train_data_path.replace('.csv', '.parquet'))
+    output_model_path = '/'.join([model_output_folder, hour])
+    if not os.path.exists(output_model_path):
+        os.makedirs(output_model_path)
+
+    if (station + '_' + output_file) in os.listdir(output_model_path):
+        print('Skip. Model with same name already existed. ' + station + ' hour ' + hour)
+        return
+
+    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby.parquet'
 
     df = pd.read_parquet(train_data_path)
     X_train, y_train = df.drop([target_variable + '_TARGET','TIME'], axis=1), df[target_variable + '_TARGET']
 
-    test_data_path = '/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.parquet'
-    # parquet_to_csv(test_data_path.replace('.csv', '.parquet'))
+    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby.parquet'
 
     df_test = pd.read_parquet(test_data_path)
     X_test, y_test = df_test.drop([target_variable + '_TARGET','TIME'], axis=1), df_test[target_variable + '_TARGET']
 
     if grid_search:
         # Simple Grid Search
-        reg = GridSearchCV(GradientBoostingRegressor(random_state=42, verbose=verbose), param_grid=param_grid, cv=3, n_jobs=-1)
+        reg = GridSearchCV(GradientBoostingRegressor(random_state=42, verbose=verbose), param_grid=param_grid, cv=5, n_jobs=-1)
 
         reg.fit(X_train, y_train)
-        print(reg.best_params_)
-        print(reg.best_score_)
+        print('>>> Best params: ': + str(reg.best_params_))
     else:
         # Normal Train
-        reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=6, verbose=verbose, max_features=0.5, random_state=42)
-        # reg = GradientBoostingRegressor(random_state=42)
+        # reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=6, verbose=verbose, random_state=42)
+        reg = GradientBoostingRegressor(random_state=42, verbose=verbose)
         reg.fit(X_train, y_train)
-
-    # # Grid Search for Time series (Gap CV)
-    # cv = GapWalkForward(n_splits=5, test_size=1)
-
-    # gbr = GradientBoostingRegressor(random_state=42)
-    # reg = GridSearchCV(gbr, param_grid=parameters, cv=cv, n_jobs=-1)
-    # reg.fit(X_train, y_train)
-    # print(reg.best_estimator_)
-    # print(reg.best_params_)
-    # print(reg.best_score_)
-
-    # # Grid Search for Time series (Nested CV)
-    # reg = NestedCV(model=GradientBoostingRegressor(random_state=42, verbose=int(verbose)), params_grid=param_grid,
-    #                outer_kfolds=3, inner_kfolds=3, n_jobs=-1)
-    #             #    cv_options={'sqrt_of_score': True,
-    #             #                'recursive_feature_elimination': True,
-    #             #                'rfe_n_features': 2})
-    # reg.fit(X_train, y_train)
-    # # print(reg.best_params_)
-    # # print(reg.best_score_)
-
-    output_model_path = '/'.join([model_output_folder, str(hour)])
-
-    if not os.path.exists(output_model_path):
-        os.makedirs(output_model_path)
 
     with open(output_model_path + '/' + station + '_' + output_file, 'wb') as f:
         pickle.dump(reg, f)
-        # print('Model: ' + station + ' hour ' + str(hour) + ' saved.')
+        print('Model: ' + station + ' hour ' + hour + ' saved.')
 
     MAE = str(sum(abs(reg.predict(X_test) - y_test))/len(X_test))
 
     print(', '.join([station, hour, MAE]))
-    # except Exception as e:
-    #     print(repr(e))
-    #     continue
 
 
 if __name__ == '__main__':
