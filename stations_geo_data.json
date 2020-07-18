@@ -68,5 +68,12 @@
     "鳳山": {"latitude": 22.627392, "longitude": 120.358083},
     "汐止": {"latitude": 25.065669, "longitude": 121.6408},
     "屏東": {"latitude": 22.673081, "longitude": 120.488033},
-    "新營": {"latitude": 23.305633, "longitude": 120.31725}
+    "新營": {"latitude": 23.305633, "longitude": 120.31725},
+    "富貴角": {"latitude": 25.297436, "longitude": 121.537975},
+    "花蓮": {"latitude": 23.971306, "longitude": 121.599769},
+    "關山": {"latitude": 23.045083, "longitude": 121.161933},
+    "臺東": {"latitude": 22.755358, "longitude": 121.150450},
+    "金門": {"latitude": 24.432133, "longitude": 118.312256},
+    "馬公": {"latitude": 23.569031, "longitude": 119.566158},
+    "馬祖": {"latitude": 26.153611, "longitude": 119.952500}
 }

@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from utils import *
 import warnings
+import requests
 import aqi
 warnings.simplefilter("ignore", UserWarning)
 parser = argparse.ArgumentParser()
@@ -32,8 +33,13 @@ def datetime_transform(date_str):
 
 def read_station_date_df(station):
     global target_date, target_date_prev_1
-    target_df = pd.read_csv('./data/aqi_daily_hourly/' + target_date + '/aqi_daily_hourly_' + target_date + '.csv')
-    target_df_prev_1 = pd.read_csv('./data/aqi_daily_hourly/' + target_date_prev_1 + '/aqi_daily_hourly_' + target_date_prev_1 + '.csv')
+
+    # url = 'https://storage.cloud.google.com/iot_turbo/data/table:預測AQI前處理/table:預測AQI前處理,day:' + str(target_date) + '.parquet?hl=zh-TW'
+
+    # table:預測AQI前處理 / table:預測AQI前處理,day:2018-01-26.parquet
+
+    target_df = pd.read_parquet('./data/aqi_daily_hourly/' + target_date + '/aqi_daily_hourly_' + target_date + '.csv')
+    target_df_prev_1 = pd.read_parquet('./data/aqi_daily_hourly/' + target_date_prev_1 + '/aqi_daily_hourly_' + target_date_prev_1 + '.csv')
 
     df = pd.concat([target_df_prev_1, target_df])
     df = df[df['Station'] == station]
@@ -106,14 +112,14 @@ def main(cfg):
     for ost in other_stations:
         for feat in ['PM2.5', 'PM10', 'NO2', 'O3', 'CO']:
             # val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
-            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0])
-            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-2)][feat].values[0])
-            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-5)][feat].values[0])
-            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-11)][feat].values[0])
-            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-23)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == target_time][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == target_time + timedelta(hours=-2)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == target_time + timedelta(hours=-5)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == target_time + timedelta(hours=-11)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == target_time + timedelta(hours=-23)][feat].values[0])
             for hour_avg in [3,6,12,24]:
                 summ = 0
-                ctr = 0
+                ctr = 0.01
                 for i in range(hour_avg):
                     t = target_time + timedelta(hours=-i-1)
                     val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
@@ -121,7 +127,7 @@ def main(cfg):
                         val = int(val)
                         summ += val
                         ctr += 1
-                    except:
+                    except Exception as e:
                         pass
                 os_data.append(summ / ctr)
 

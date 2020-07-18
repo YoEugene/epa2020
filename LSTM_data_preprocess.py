@@ -127,9 +127,7 @@ def raw_csv_to_lstm_csv(raw_csv, lstm_csv, year, area, station):
             if cur_date != date_str:
                 cur_date = date_str
                 orig_day = str(day)
-                # print(orig_day)
                 year, mon, day = date_str.split('/')
-                # print(day)
                 if int(day) > 1 :
                     day_ctr += (int(day) - int(orig_day)) % 30 
                 else:

@@ -39,7 +39,6 @@ def main(cfg):
     elif cfg['areas']:
         areas = cfg['areas']
 
-
     if not args.o and not cfg['model_output_name']:
         output_file = "model.pickle"
     elif args.o:
@@ -73,13 +72,15 @@ def main(cfg):
                             indices = numpy.argsort(importances)[-100:][::-1]
                             feat_ind_pairs = [[features[ind], importances[ind]] for ind in indices]
 
-                            nearby_stations = sorted(get_nearby_stations(station, cfg['nearby_km_range']))
+                            other_stations = get_nearby_stations(station, cfg['nearby_km_range'])
+                            other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
+                            other_stations = sorted(list(set(other_stations)))
                             for pair in feat_ind_pairs:
                                 if '_NEARBY' in pair[0]:
                                     tmp = pair[0]
                                     station_ind = int(tmp[tmp.index('_NEARBY')+7:tmp[tmp.index('_NEARBY')+1:].index('_') + tmp.index('_NEARBY')+1]) - 1
                                     pair[0] = tmp[:tmp.index('_NEARBY')+7] + \
-                                              '_' + nearby_stations[station_ind] + \
+                                              '_' + other_stations[station_ind] + \
                                               tmp[tmp[tmp.index('_NEARBY')+1:].index('_') + tmp.index('_NEARBY')+1:]
                                 # print(pair)
 

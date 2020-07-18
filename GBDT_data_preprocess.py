@@ -14,12 +14,6 @@ args = parser.parse_args()
 
 features = ['','PM2.5','O3','AMB_TEMP','CH4','CO','NMHC','NO','NO2','NOx','PM10','RAINFALL','RH','SO2','THC','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH']
 
-# features: 
-# 1. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: pre 1-36
-# 2. RH, WIND_DIREC, WIND_SPEED, WS_HR, WD_HR, AMB_TEMP: pre 1-13
-# 3. PM2.5, SO2, O3, CO, NOx, PM10, THC, NO2, NO, NMHC, CH4: avg_3hr, avg_6hr, avg_12hr, avg_24hr
-# 4. hour of day, day of year, month, weekday
-
 data_root_folder = "./EPA_Station_rawdata"
 train_begin_year = 2015  # default value
 train_end_year = 2018  # default value
@@ -86,9 +80,6 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
 
     output = open(output_csv_path, "w")
     wr = csv.writer(output)
-    # wr.writerow(['PM25','SO2','O3','CO','NOx','PM10','RH','THC','WIND_DIREC','AMB_TEMP','NO2','NO','NMHC','WIND_SPEED','CH4','WS_HR','WD_HR','DAY_OF_YEAR','HOUR','WEEKDAY','MONTH'])
-
-    # parquet_to_csv(lstm_csv_path.replace('csv', 'parquet'))
 
     with open(lstm_csv_path, newline='') as f:
         reader = csv.reader(f)
@@ -136,22 +127,15 @@ def lstm_to_gbdt_csv(lstm_csv_path, gbdt_csv_path, gbdt_csv_name, hour_offset):
                     wr.writerow(header)
                     flag = False
 
-                # print(data_point)
-
                 wr.writerow(data_point)
 
                 row_48.append(row)
                 row_48 = row_48[1:]
-                # break
 
             except StopIteration:
                 row = None
-                # print('/'.join([gbdt_csv_path, gbdt_csv_name]) + ' done.')
 
     output.close()
-
-    # csv_to_parquet(output_csv_path)
-    # os.remove(output_csv_path)
 
 
 if __name__ == "__main__":

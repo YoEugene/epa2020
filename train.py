@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 import pickle
 import argparse
 from utils import *
+import pandas as pd
 
 # Multiprocessing
 import itertools
@@ -27,35 +28,12 @@ test_end_year = 2019  # default value
 target_variable = "PM2.5"
 grid_search = False
 
-# Import relevant items
-import pandas as pd
-# import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# import datetime as dt
-# from datetime import datetime
-# import math
 
 param_grid = {
     "learning_rate": [0.01, 0.05, 0.1],
-    # "min_samples_split": [0.01, 2],
-    # "min_samples_leaf": [0.01, 1],
     "max_depth": [3,5],
-    # "max_features":["sqrt", None],
-    # "criterion": ["friedman_mse", "mae"],
-    # "subsample": [0.6, 1.0],  # [0.5, 0.618, 0.8, 0.85, 0.9, 0.95, 1.0]
     "n_estimators": [50, 100, 150]
-    # "n_estimators": [10, 20]
 }
-
-# parameters = {
-#     'learning_rate': [0.1], 
-#     'n_estimators': [256], 
-#     'max_depth': [6,8,10], 
-#     'max_features': [0.2,0.4], 
-#     'verbose': [1], 
-#     'random_state': [0]
-# }
 
 
 def main(cfg):
@@ -166,7 +144,7 @@ def station_multiprocess(station_input):
         print('>>> Best params: ': + str(reg.best_params_))
     else:
         # Normal Train
-        # reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=6, verbose=verbose, random_state=42)
+        reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=5, verbose=verbose, random_state=42)
         reg = GradientBoostingRegressor(random_state=42, verbose=verbose)
         reg.fit(X_train, y_train)
 

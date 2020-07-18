@@ -91,7 +91,6 @@ def station_multiprocess(station_input):
 
     # print('with nearby stations: ' + str(other_stations))
 
-    # gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), args.target, args.o)
     gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
     gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
 
@@ -106,9 +105,6 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
     wr = csv.writer(output)
 
     target_station_csv_path = '/'.join([data_root_folder, area, target_station, target_variable, hour, target_csv_name])
-    # target_station_parquet_path = target_station_csv_path.replace("csv", "parquet")
-
-    # parquet_to_csv(target_station_parquet_path)
 
     target_reader = csv.reader(open(target_station_csv_path, newline=''))
     other_stations_readers = []
@@ -143,8 +139,6 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                             variable + '_NEARBY' + str(i+1) + '_AVG24',
                         ])
 
-    # print(len(header))
-
     wr.writerow(header)
 
     date_format = '%d.%m.%Y %H:%M:%S'
@@ -160,11 +154,8 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                 date_check_str = date_check_str.replace(' 24:', ' 23:')
                 cur_datetime = datetime.strptime(date_check_str, date_format)
                 cur_datetime += timedelta(hours=1)
-            # print(date_check_str)
             data_point = row
-            # for osr in other_stations_readers:
             for i, osr in enumerate(other_stations_readers):
-                # print(date_continue)
                 try:
                     if date_continue[i] is True:
                         osr_row = next(osr)
@@ -184,14 +175,9 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                             osr_row_time = datetime.strptime(date_check_tmp, date_format)
                             osr_row_time += timedelta(hours=1)
                 except StopIteration as e:
-                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print(other_stations[i])
                     row = None
                     break
-
-                # print(date_check_str)
-                # print(osr_row[0])
-
 
                 if cur_datetime == osr_row_time:
                     date_continue[i] = True
@@ -233,8 +219,6 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                 elif cur_datetime < osr_row_time:
                     date_continue[i] = osr_row[:]
                     data_point.extend([-1]*(len(related_variables)*9))
-                    # print('here')
-            # print(len(data_point))
 
             wr.writerow(data_point)
         except StopIteration as e:
@@ -242,12 +226,8 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
         except Exception as e:
             print(repr(e))
 
-    # print(target_station + ' ' + hour + ' done.')
     output.close()
-
     csv_to_parquet(output_csv_path)
-    # os.remove(output_csv_path)
-    # os.remove(target_station_csv_path)
 
 
 if __name__ == '__main__':
