@@ -129,7 +129,7 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
         osr_row = next(osr)
 
     for i in range(len(other_stations_readers)):
-        related_variables = ['PM2.5', 'PM10', 'NO2', 'O3', 'CO', 'NMHC', 'NO', 'NOx']
+        related_variables = ['PM2.5', 'PM10', 'NO2', 'O3', 'CO']
         for variable in related_variables:
             header.extend([
                             variable + '_NEARBY' + str(i+1) + '_T1', 

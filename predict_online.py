@@ -51,10 +51,9 @@ def main(cfg):
     target_df = read_station_date_df(args.s)
     other_dfs = {}
 
-    # other_stations = sorted(get_nearby_stations(args.s, 80))
-    # other_stations = os.listdir('/'.join([data_root_folder, 'Central']))
-    other_stations = ['大里站', '線西站', '埔里站', '忠明站', '彰化站', '竹山站', '西屯站', '南投站', '豐原站', '二林站', '沙鹿站']
-    other_stations.remove(args.s)
+    other_stations = get_nearby_stations(station, cfg['nearby_km_range'])
+    other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
+    other_stations = sorted(list(set(other_stations)))
 
     # print(other_stations)
 
@@ -63,7 +62,7 @@ def main(cfg):
 
     data = []
 
-    for feat in ['PM2.5','O3','CH4','CO','NMHC','NO','NO2','NOx','PM10','SO2','THC']:
+    for feat in ['PM2.5', 'O3', 'CH4', 'CO', 'NMHC', 'NO', 'NO2', 'NOx', 'PM10', 'SO2', 'THC']:
         for i in range(1, 37):
             t = target_time + timedelta(hours=-i)
             val = target_df[target_df['Date Time'] == t][feat].values[0]
@@ -72,7 +71,7 @@ def main(cfg):
             except:
                 val = 0
             data.append(val)
-    for feat in ['AMB_TEMP','RAINFALL','RH','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']:
+    for feat in ['AMB_TEMP', 'RAINFALL', 'RH', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']:
         for i in range(1, 13):
             t = target_time + timedelta(hours=-i)
             val = target_df[target_df['Date Time'] == t][feat].values[0]
@@ -81,7 +80,7 @@ def main(cfg):
             except:
                 val = 0
             data.append(val)
-    for feat in ['PM2.5','O3','CH4','CO','NMHC','NO','NO2','NOx','PM10','SO2','THC']:
+    for feat in ['PM2.5', 'O3', 'CH4', 'CO', 'NMHC', 'NO', 'NO2', 'NOx', 'PM10', 'SO2', 'THC']:
         for hour_avg in [3,6,12,24]:
             summ = 0
             ctr = 0
@@ -105,22 +104,26 @@ def main(cfg):
 
     os_data = []
     for ost in other_stations:
-        feat = 'PM2.5'
-        val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
-        os_data.append(val)
-        for hour_avg in [3,6,12,24]:
-            summ = 0
-            ctr = 0
-            for i in range(hour_avg):
-                t = target_time + timedelta(hours=-i-1)
-                val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
-                try:
-                    val = int(val)
-                    summ += val
-                    ctr += 1
-                except:
-                    pass
-            os_data.append(summ / ctr)
+        for feat in ['PM2.5', 'PM10', 'NO2', 'O3', 'CO']:
+            # val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-2)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-5)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-11)][feat].values[0])
+            os_data.append(other_dfs[ost][other_dfs[ost]['Date Time'] == t + timedelta(hours=-23)][feat].values[0])
+            for hour_avg in [3,6,12,24]:
+                summ = 0
+                ctr = 0
+                for i in range(hour_avg):
+                    t = target_time + timedelta(hours=-i-1)
+                    val = other_dfs[ost][other_dfs[ost]['Date Time'] == t][feat].values[0]
+                    try:
+                        val = int(val)
+                        summ += val
+                        ctr += 1
+                    except:
+                        pass
+                os_data.append(summ / ctr)
 
 
     if args.v != 'AQI':
