@@ -34,6 +34,9 @@ def main(cfg):
 
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
 
+    global nearby_km_range
+    nearby_km_range = cfg['nearby_km_range']
+
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central", "East", "Other"]
     elif args.areas:
@@ -76,7 +79,7 @@ def main(cfg):
 
 
 def station_multiprocess(station_input):
-    global data_root_folder
+    global data_root_folder, nearby_km_range
 
     station, area, hour = station_input
 
@@ -91,8 +94,8 @@ def station_multiprocess(station_input):
 
     # print('with nearby stations: ' + str(other_stations))
 
-    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
-    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby_' + str(cfg['nearby_km_range']) + 'km.csv')
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2015_2018.csv', 'gbdt_2015_2018_nearby_' + str(nearby_km_range) + 'km.csv')
+    gbdt_add_nearby_stations_data(area, station, other_stations, str(hour), 'gbdt_2019.csv', 'gbdt_2019_nearby_' + str(nearby_km_range) + 'km.csv')
 
 
 def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, target_csv_name, output_csv_name):
@@ -174,7 +177,6 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
                         try:
                             osr_row_time = datetime.strptime(osr_row[0], date_format)
                         except ValueError:
-                            # print('err: ' + osr_row[0])
                             date_check_tmp = osr_row[0].replace(' 24:', ' 23:')
                             osr_row_time = datetime.strptime(date_check_tmp, date_format)
                             osr_row_time += timedelta(hours=1)
