@@ -126,12 +126,12 @@ def station_multiprocess(station_input):
         print('Skip. Model with same name already existed. ' + station + ' hour ' + hour)
         return
 
-    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby.parquet'
+    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby_' + cfg['nearby_km_range'] + 'km.parquet'
 
     df = pd.read_parquet(train_data_path)
     X_train, y_train = df.drop([target_variable + '_TARGET','TIME'], axis=1), df[target_variable + '_TARGET']
 
-    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby.parquet'
+    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby_' + cfg['nearby_km_range'] + 'km.parquet'
 
     df_test = pd.read_parquet(test_data_path)
     X_test, y_test = df_test.drop([target_variable + '_TARGET','TIME'], axis=1), df_test[target_variable + '_TARGET']
@@ -141,7 +141,7 @@ def station_multiprocess(station_input):
         reg = GridSearchCV(GradientBoostingRegressor(random_state=42, verbose=verbose), param_grid=param_grid, cv=5, n_jobs=-1)
 
         reg.fit(X_train, y_train)
-        print('>>> Best params: ': + str(reg.best_params_))
+        print('>>> Best params: ' + str(reg.best_params_))
     else:
         # Normal Train
         reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=5, verbose=verbose, random_state=42)
