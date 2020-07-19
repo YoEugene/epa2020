@@ -23,5 +23,5 @@
     "error_input_name": "_error_nearby_80km_24hour_20200718.csv",
     "error_output_name": "_month_error_nearby_80km_24hour_20200718.csv",
     "verbose": 1,
-    "multiprcossing_number": 20
+    "multiprcossing_number": 64
 }

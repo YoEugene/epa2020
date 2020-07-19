@@ -104,9 +104,9 @@ def gbdt_add_nearby_stations_data(area, target_station, other_stations, hour, ta
 
     output_csv_path = '/'.join([data_root_folder, area, target_station, target_variable, hour, output_csv_name])
 
-    if os.path.exists(output_csv_path) or os.path.exists(output_csv_path.replace('.csv', '.parquet')):
-        print('Nearby data already added. Passed. ' + output_csv_path.replace('.csv', '.csv/.parquet'))
-        return
+    # if os.path.exists(output_csv_path) or os.path.exists(output_csv_path.replace('.csv', '.parquet')):
+    #     print('Nearby data already added. Passed. ' + output_csv_path.replace('.csv', '.csv/.parquet'))
+    #     return
 
     output = open(output_csv_path, "w+")
     wr = csv.writer(output)
