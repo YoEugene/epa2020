@@ -90,6 +90,7 @@ def station_multiprocess(station_input):
 
     other_stations = get_nearby_stations(station, nearby_km_range)
     other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
+    if station in other_stations: other_stations.remove(station)
     other_stations = sorted(list(set(other_stations)))
 
     # print('with nearby stations: ' + str(other_stations))
