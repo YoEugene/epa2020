@@ -43,6 +43,7 @@ def main(cfg):
     global verbose
     global model_output_folder
     global grid_search
+    global nearby_km_range
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -50,6 +51,7 @@ def main(cfg):
     test_end_year = cfg['test_end_year']
     target_variable = cfg['variable']
     grid_search = cfg['grid_search']
+    nearby_km_range = cfg['nearby_km_range']
     model_output_folder = cfg['model_output_folder'] + target_variable
 
     multiprcossing_number = cfg["multiprcossing_number"] if cfg and "multiprcossing_number" in cfg else 10
@@ -108,6 +110,7 @@ def station_multiprocess(station_input):
     global output_file
     global verbose
     global model_output_folder
+    global nearby_km_range
 
     station, area, hour = station_input
 
@@ -126,12 +129,12 @@ def station_multiprocess(station_input):
         print('Skip. Model with same name already existed. ' + station + ' hour ' + hour)
         return
 
-    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby_' + str(cfg['nearby_km_range']) + 'km.parquet'
+    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby_' + str(nearby_km_range) + 'km.parquet'
 
     df = pd.read_parquet(train_data_path)
     X_train, y_train = df.drop([target_variable + '_TARGET','TIME'], axis=1), df[target_variable + '_TARGET']
 
-    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby_' + str(cfg['nearby_km_range']) + 'km.parquet'
+    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby_' + str(nearby_km_range) + 'km.parquet'
 
     df_test = pd.read_parquet(test_data_path)
     X_test, y_test = df_test.drop([target_variable + '_TARGET','TIME'], axis=1), df_test[target_variable + '_TARGET']
