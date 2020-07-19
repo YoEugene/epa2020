@@ -11,7 +11,7 @@
     "missing_value_filling_n_hours_avg": 24,
     "nearby_km_range": 80,
     "data_root_folder": "./EPA_Station_rawdata",
-    "grid_search": true,
+    "grid_search": false,
     "mape_month_output_folder": "./EPA_Station_MAPE_month_",
     "mae_month_output_folder": "./EPA_Station_MAE_month_",
     "mape_hour_output_folder": "./EPA_Station_MAPE_hour_",

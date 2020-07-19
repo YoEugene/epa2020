@@ -145,7 +145,7 @@ def station_multiprocess(station_input):
     else:
         # Normal Train
         reg = GradientBoostingRegressor(learning_rate=0.05, n_estimators=200, max_depth=5, verbose=verbose, random_state=42)
-        reg = GradientBoostingRegressor(random_state=42, verbose=verbose)
+        # reg = GradientBoostingRegressor(random_state=42, verbose=verbose)
         reg.fit(X_train, y_train)
 
     with open(output_model_path + '/' + station + '_' + output_file, 'wb') as f:
