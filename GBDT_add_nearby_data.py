@@ -88,7 +88,7 @@ def station_multiprocess(station_input):
 
     print('Adding nearby station data into model: ' + station + " hour " + str(hour))
 
-    other_stations = get_nearby_stations(station, cfg['nearby_km_range'])
+    other_stations = get_nearby_stations(station, nearby_km_range)
     other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
     other_stations = sorted(list(set(other_stations)))
 
