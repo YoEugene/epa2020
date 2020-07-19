@@ -126,12 +126,12 @@ def station_multiprocess(station_input):
         print('Skip. Model with same name already existed. ' + station + ' hour ' + hour)
         return
 
-    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby_' + cfg['nearby_km_range'] + 'km.parquet'
+    train_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2015_2018_nearby_' + str(cfg['nearby_km_range']) + 'km.parquet'
 
     df = pd.read_parquet(train_data_path)
     X_train, y_train = df.drop([target_variable + '_TARGET','TIME'], axis=1), df[target_variable + '_TARGET']
 
-    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby_' + cfg['nearby_km_range'] + 'km.parquet'
+    test_data_path = '/'.join([data_root_folder, area, station, target_variable, hour]) + '/gbdt_2019_nearby_' + str(cfg['nearby_km_range']) + 'km.parquet'
 
     df_test = pd.read_parquet(test_data_path)
     X_test, y_test = df_test.drop([target_variable + '_TARGET','TIME'], axis=1), df_test[target_variable + '_TARGET']
