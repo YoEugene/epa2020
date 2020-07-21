@@ -97,9 +97,7 @@ def main(cfg):
             for hour in range(1, 14):
                 # print('/'.join([model_output_folder + target_variable, str(hour)]))
                 files = os.listdir('/'.join([model_output_folder + target_variable, str(hour)]))
-                print(files)
                 full_model_name = station + '_' + model_name
-                print(full_model_name)
                 if full_model_name in files:
                     with open('/'.join([model_output_folder + target_variable, str(hour), full_model_name]), 'rb') as model:
                         reg = pickle.load(model)
