@@ -101,7 +101,7 @@ def main(cfg):
                 if full_model_name in files:
                     with open('/'.join([model_output_folder + target_variable, str(hour), full_model_name]), 'rb') as model:
                         reg = pickle.load(model)
-                        df_true = pd.read_parquet('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2019_nearby.parquet')
+                        df_true = pd.read_parquet('/'.join([data_root_folder, area, station, target_variable, str(hour)]) + '/gbdt_2015_2018_nearby_' + str(nearby_km_range) + 'km.parquet')
                         X_true, y_true = df_true.drop([target_variable + '_TARGET','TIME'], axis=1), df_true[target_variable + '_TARGET']
                         y_pred = pd.Series(reg.predict(X_true))
                         y_pred = y_pred.round(2)

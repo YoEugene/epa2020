@@ -64,7 +64,7 @@ def main(cfg):
                     if station in model and output_file in model:
                         with open('/'.join([model_output_folder, hour, model]), 'rb') as m:
                             reg = pickle.load(m)
-                            station_importance_folder = '/'.join([feature_importance_folder, station])
+                            station_importance_folder = '/'.join([feature_importance_folder, hour])
                             if not os.path.exists(station_importance_folder):
                                 os.makedirs(station_importance_folder)
                             print(station, hour)
@@ -74,6 +74,7 @@ def main(cfg):
 
                             other_stations = get_nearby_stations(station, cfg['nearby_km_range'])
                             other_stations.extend(['富貴角站', '馬公站', '馬祖站', '金門站'])
+                            if station in other_stations: other_stations.remove(station)
                             other_stations = sorted(list(set(other_stations)))
                             for pair in feat_ind_pairs:
                                 if '_NEARBY' in pair[0]:
@@ -84,7 +85,7 @@ def main(cfg):
                                               tmp[tmp[tmp.index('_NEARBY')+1:].index('_') + tmp.index('_NEARBY')+1:]
                                 # print(pair)
 
-                            with open('/'.join([feature_importance_folder, station, 'hour_' + hour + '_importances.csv']), 'w', newline='') as csvfile:
+                            with open('/'.join([feature_importance_folder, hour, target_variable + '_' + station + '_' + hour + '_importances.csv']), 'w', newline='') as csvfile:
                                 writer = csv.writer(csvfile)
                                 for row in feat_ind_pairs:
                                     writer.writerow(row)
