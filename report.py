@@ -91,9 +91,6 @@ def main(cfg):
                 mon_mask = df_by_station_mon['time'].map(lambda x: x.month) == mon
                 year_mask = df_by_station_mon['time'].map(lambda x: x.year) == 2019
                 df_by_station_mon = df_by_station_mon[mon_mask & year_mask]
-
-                print(df_by_station_mon)
-
                 predict_values = df_by_station_mon.drop(['Unnamed: 0', 'station', 'time', 'variable'], axis=1).iloc[:, 13:26]
                 true_values = df_by_station_mon.drop(['Unnamed: 0', 'station', 'time', 'variable'], axis=1).iloc[:, 26:39].values
                 if cfg['report_type'] == "MAE":
