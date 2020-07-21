@@ -39,6 +39,7 @@ def main(cfg):
     global model_output_folder
     global model_output_name
     global mae_hour_output_folder
+    global nearby_km_range
     data_root_folder = cfg['data_root_folder']
     train_begin_year = cfg['train_begin_year']
     train_end_year = cfg['train_end_year']
@@ -48,6 +49,7 @@ def main(cfg):
     model_output_folder = cfg['model_output_folder']
     model_output_name = cfg['model_output_name']
     mae_hour_output_folder = cfg['mae_hour_output_folder']
+    nearby_km_range = cfg['nearby_km_range']
 
     if not args.areas and not cfg['areas']:
         areas = ["North", "South", "Central", "East", "Other"]
