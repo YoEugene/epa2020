@@ -102,6 +102,8 @@ def main(cfg):
                 df_length = len(df_o)
                 df_o.loc[df_length] = [station, str(mon)] + df_by_station_mon_error
 
+    if not os.path.exists('./EPA_Station_' + cfg['report_type'] + '_month_' + target_variable):
+        os.mkdir('./EPA_Station_' + cfg['report_type'] + '_month_' + target_variable)
     if len(areas) == 1:
         df_o.to_csv('./EPA_Station_' + cfg['report_type'] + '_month_' + target_variable + '/' + areas[0] + error_output_file)
     else:
