@@ -69,7 +69,7 @@ def main(cfg):
     for area in areas:
         print('################ Processing area: ' + area + ' ################')
         # Import CSV file into a dataframe
-        error_input_path = './EPA_Station_MAE_hour_PM2.5/' + area + error_input_name
+        error_input_path = './EPA_Station_MAE_hour_' + target_variable + '/' + area + error_input_name
         print(error_input_path)
         df = pd.read_csv(error_input_path)
 
@@ -86,7 +86,7 @@ def main(cfg):
             if '.' in station: continue
             if station not in os.listdir('/'.join([data_root_folder, area])): continue
             print('Start Reporting on: ' + station)
-            for mon in range(1,13):
+            for mon in range(1, 13):
                 df_by_station_mon = df[df['station'] == station]
                 mon_mask = df_by_station_mon['time'].map(lambda x: x.month) == mon
                 year_mask = df_by_station_mon['time'].map(lambda x: x.year) == 2019
@@ -103,10 +103,11 @@ def main(cfg):
                 df_o.loc[df_length] = [station, str(mon)] + df_by_station_mon_error
 
     if len(areas) == 1:
-        df_o.to_csv('./EPA_Station_' + cfg['report_type'] + '_month_PM2.5/' + areas[0] + error_output_file)
+        df_o.to_csv('./EPA_Station_' + cfg['report_type'] + '_month_' + target_variable + '/' + areas[0] + error_output_file)
     else:
         areas_name = '_'.join(areas)
-        df_o.to_csv('./EPA_Station_' + cfg['report_type'] + '_month_PM2.5/' + areas_name + error_output_file)
+        df_o.to_csv('./EPA_Station_' + cfg['report_type'] + '_month_' + target_variable + '/' + areas_name + error_output_file)
+        print('file save at: ' + './EPA_Station_' + cfg['report_type'] + '_month_' + target_variable + '/' + areas_name + error_output_file)
 
 
 if __name__ == '__main__':

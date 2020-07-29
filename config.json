@@ -1,5 +1,5 @@
 {
-    "variable": "PM2.5",
+    "variable": "PM10",
     "model": "GBDT",
     "areas": ["North", "Central", "South", "East", "Other"],
     "report_type": "MAE",

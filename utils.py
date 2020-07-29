@@ -48,3 +48,10 @@ def get_nearby_stations(target_station, dist):
         if d <= dist: stations.append(station + '站')
 
     return stations
+
+
+def get_devideId_by_station(station):
+    with open('./station_deviceId.json') as f:
+        data = json.load(f)
+
+    return data[station]
